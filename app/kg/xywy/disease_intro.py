@@ -33,6 +33,7 @@ def parse_rate(ori):
 	else:
 		rate = ratelist[0]
 	
+	rate = round(rate, 8)
 	return rate
 
 def get_group(cont):
@@ -58,8 +59,8 @@ def parse_department(s):
 age_info = [('0-1', 0, 1, ['婴幼儿', '婴儿', '新生儿', '小儿', '儿童', '儿科', '男孩', '女孩']), 
 		    ('1-10', 1, 10, ['婴幼儿', '幼儿', '小儿', '少年', '青少年', '儿童', '儿科', '男孩', '女孩']), 
 			('10-20', 10, 20, ['青年', '青少年', '男孩', '女孩']), 
-			('20-40', 20, 40, ['成年', '青年', '中青年', '妊娠', '哺乳']),
-			('40-60', 40, 60, ['成年', '中年', '中老年', '中青年']),
+			('20-40', 20, 40, ['成年', '青年', '中青年', '妊娠', '哺乳', '妇科', '男科', '产科', '妇产']),
+			('40-60', 40, 60, ['成年', '中年', '中老年', '中青年', '妇科', '男科']),
 			('60-', 60, 200, ['成年', '老年', '中老年', '老人'])
 			]
 sex_info = [('m', ['男']), ('f', ['女','妇'])]
@@ -75,7 +76,7 @@ def prob_norm(d):
 	for k, v in d.items():
 		s += v
 	for k in d.keys():
-		d[k] = '%.4f' % (d[k] / s)
+		d[k] = round(d[k] / s, 4)
 
 def calc_age_prob(dori):
 	ret = init_dict(age_info)
@@ -123,3 +124,5 @@ for page in os.listdir(pagedir):
 	dstu['sex'] = sorted(calc_sex_prob(dori).items())
 	dstu['department'] = parse_department(dori['department'])
 	print(json.dumps(disease_info, ensure_ascii=False))	
+
+#end
