@@ -7,6 +7,8 @@ import urllib
 import urllib.request
 from collections import deque
 from bs4 import BeautifulSoup
+sys.path.append('../../../alg/basic')
+import str_util
 
 def get_site(url):
 	try:
@@ -14,6 +16,44 @@ def get_site(url):
 		return r.netloc
 	except:
 		return ''
+
+def check_key(db_name, key):
+	while 1:	#其他进程可能在用db，所以要while try
+	#try:
+		if 1:	
+			db = leveldb.LevelDB(db_name)
+			break
+		else:
+		#except:
+			print('fatal: db init failed', file = sys.stderr)
+			time.sleep(random.randint(0, 10) * 0.01)
+			continue
+		
+	val = ''
+	try:
+		val = db.Get(bytes(key, encoding = 'utf-8'))
+		return True
+	except:
+		return False
+
+def add_kv(db_name, key, val):
+	while 1:
+		if 1:
+			db = leveldb.LevelDB(db_name)
+			break
+		else:
+		#except:
+			print('fatal: db init failed', file = sys.stderr)
+			time.sleep(random.randint(0, 10) * 0.01)
+			continue
+	while 1:
+		try:
+			db.Put(key, val)
+			break	
+		except:
+			print('fatal: db put failed', file = sys.stderr)
+			continue
+
 
 lock = threading.RLock()
 class MiniSpider:
@@ -52,27 +92,8 @@ class MiniSpider:
 	def pop_url(self):
 		lock.acquire()
 		new_url = ''
-		while 1:	#其他进程可能在用db，所以要while try
-			try:
-				db = leveldb.LevelDB(self.url_db_dir)
-				break
-			except:
-				print('fatal: db init failed', file = sys.stderr)
-				time.sleep(random.randint(0, 10) * 0.01)
-				continue
-		while self.url_queue:
-			url = self.url_queue.popleft()
-			#print(url)
-			val = ''
-			try:
-				val = db.Get(bytes(url, encoding = 'utf-8'))
-			except:
-				pass
-			
-			if val == '':
-				new_url = url
-				break
-
+		if self.url_queue:
+			new_url = self.url_queue.popleft()
 		lock.release()
 		return new_url
 
@@ -100,8 +121,21 @@ class MiniSpider:
 			if re.match(pattern, url) != None:
 				valid = True
 				break
-		#print('valid=%d' % valid)	
-		return valid	
+		if not valid:
+			return False
+
+		lock.acquire()
+		url_visited = check_key(self.url_db_dir, url)
+		lock.release()
+		if url_visited:
+			return False
+
+		key = bytes(url, encoding = 'utf-8')
+		val = bytes('%s\t%d\t%d' % (self.url_db_dir, self.file_id, self.file_len_cur), encoding = 'utf-8')
+		lock.acquire()
+		add_kv(self.url_db_dir, key, val)
+		lock.release()
+		return True	
 
 	def crawl_url(self, url):
 		headers = {'User-Agent': r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -130,9 +164,6 @@ class MiniSpider:
 		if not self.check_save(url):
 			return
 		try:
-			key = bytes(url, encoding = 'utf-8')
-			val = bytes('%s\t%d\t%d' % (self.url_db_dir, self.file_id, self.file_len_cur), encoding = 'utf-8')
-			
 			head = 'url: %s\npage: ' % url
 			tail = '\n~EOF!\n'
 			cont = bytes(head + page + tail, encoding = 'utf-8')
@@ -144,14 +175,6 @@ class MiniSpider:
 		if self.url_num % 10000 == 0:
 			self.file_id += 1
 			self.file_len_cur = 0
-		while 1:
-			try:
-				db = leveldb.LevelDB(self.url_db_dir)
-				db.Put(key, val)
-				break	
-			except:
-				print('fatal: db put failed', file = sys.stderr)
-				continue
 		
 		fp = open('%s/%d' % (self.result_dir, self.file_id), 'ab')
 		fp.write(cont)
@@ -162,12 +185,23 @@ class MiniSpider:
 		lock.release()
 
 	def parse_link(self, ori_url, page):
+		#for search results
+		if ori_url.startswith('https://search.yahoo.com/search'):
+			for link in str_util.cut_windows(page, 'http%3a%2f%2f', '.pdf'):
+				if link.find('<') >= 0 or link.find('>') >= 0:	
+					continue
+				link = 'http://%s.pdf' % link.replace('%2f', '/')
+				lock.acquire()
+				self.url_queue.append(link)
+				lock.release()
+			return	
+
 		soup = BeautifulSoup(page, 'html.parser')
 		for a in soup.findAll('a',href=True):
 			link = a['href']
 			if link != '' and link.startswith('/'):
 				link = get_site(ori_url) + link
-			#print('link\t%s\t%s' % (ori_url, link))
+			print('link\t%s\t%s' % (ori_url, link))
 			if not self.check_link(link):
 				continue
 			lock.acquire()
