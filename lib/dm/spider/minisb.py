@@ -54,7 +54,7 @@ class MiniSpider:
 				db = leveldb.LevelDB(self.url_db_dir)
 				break
 			except:
-				print('db lock')
+				print('fatal: db init failed', file = sys.stderr)
 				time.sleep(random.randint(0, 10) * 0.01)
 				continue
 		while self.url_queue:
@@ -135,7 +135,7 @@ class MiniSpider:
 				db.Put(key, val)
 				break	
 			except:
-				print('db put failed')
+				print('fatal: db put failed', file = sys.stderr)
 				continue
 		
 		fp = open('%s/%d' % (self.result_dir, self.file_id), 'ab')
@@ -152,7 +152,7 @@ class MiniSpider:
 			link = a['href']
 			if link != '' and link.startswith('/'):
 				link = get_site(ori_url) + link
-			print('link\t%s\t%s' % (ori_url, link))
+			#print('link\t%s\t%s' % (ori_url, link))
 			if not self.check_url(link):
 				continue
 			lock.acquire()
