@@ -17,13 +17,16 @@ def get_site(url):
 
 lock = threading.RLock()
 class MiniSpider:
-	def __init__(self, url_db_dir, result_dir, entry_list, white_list = [], black_list = [], 
+	def __init__(self, url_db_dir, result_dir, entry_list, white_list = [], black_list = [], download_list = [], 
 				thread_num = 1, time_out = 1, time_sleep = 1, queue_max_size = 1e6, url_max_size = 1e7, file_max_size = 1e10):
 		self.url_db_dir = url_db_dir
 		self.result_dir = result_dir
 		self.entry_list = entry_list
 		self.white_list = white_list
 		self.black_list = black_list
+		self.download_list = download_list
+		if len(self.download_list) == 0:
+			self.download_list = self.white_list
 		self.thread_num = thread_num
 		self.time_out = time_out
 		self.time_sleep = time_sleep
@@ -73,7 +76,7 @@ class MiniSpider:
 		lock.release()
 		return new_url
 
-	def check_url(self, url):
+	def check_link(self, url):
 		if not (url.startswith('http://') or url.startswith('https://')):
 			return False
 		for pattern in self.black_list:
@@ -89,7 +92,17 @@ class MiniSpider:
 				break
 		#print('valid=%d' % valid)	
 		return valid	
-	
+
+	def check_save(self, url):
+		valid = False
+		for pattern in self.download_list:
+			#print('%s\t%s' % (pattern, url))
+			if re.match(pattern, url) != None:
+				valid = True
+				break
+		#print('valid=%d' % valid)	
+		return valid	
+
 	def crawl_url(self, url):
 		headers = {'User-Agent': r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
             r'Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3',
@@ -114,6 +127,8 @@ class MiniSpider:
 		return True
 
 	def save_url(self, url, page):
+		if not self.check_save(url):
+			return
 		try:
 			key = bytes(url, encoding = 'utf-8')
 			val = bytes('%s\t%d\t%d' % (self.url_db_dir, self.file_id, self.file_len_cur), encoding = 'utf-8')
@@ -153,7 +168,7 @@ class MiniSpider:
 			if link != '' and link.startswith('/'):
 				link = get_site(ori_url) + link
 			#print('link\t%s\t%s' % (ori_url, link))
-			if not self.check_url(link):
+			if not self.check_link(link):
 				continue
 			lock.acquire()
 			if len(self.url_queue) < self.queue_max_size:
@@ -199,3 +214,23 @@ class MiniSpider:
 			t.start()
 		for t in threads:
 			t.join()
+
+
+if __name__ == '__main__':
+	seeds = ['http://www.xywy.com', 
+		 'http://hxnk.xywy.com/fy/jc/20141023/955246.html',
+		 'http://jib.xywy.com/il_sii_9900.htm?fromurl=xywyhomepage',
+		 'http://healthshare.xywy.com/healthdetail/486821.htm',
+		 'http://jib.xywy.com']
+	white_list = [r'http://\w+.xywy.com/*']
+	download_list = [r'http://\w+.xywy.com/\w+/\w+/\d+/\d+\.html', r'http://healthshare.xywy.com/healthdetail/\d+\.htm']
+	sb = MiniSpider('./testdb', './testpage', seeds, 
+		white_list = download_list, download_list = download_list, thread_num = 5, time_sleep = 0.1,
+		queue_max_size = 1e6, url_max_size = 1e2, file_max_size = 1e9)
+
+	if sb.prepare():
+		sb.run()
+	else:
+		print('mini spider prepare failed', file = sys.stderr)
+
+
