@@ -12,10 +12,11 @@ for tag in tag_list:
 	url_req = urllib.parse.quote(url, safe=':/?=%+') 
 	seeds.append(url_req)
 
+retdir = '/home/work/data/health_pdf/yahoo'
 download_list = [r'http://.+?\.pdf', r'https://.+?\.pdf']
-sb = MiniSpider('./result/db.pdf', './result/page.pdf', seeds, time_out = 1, piror_mode = 1,
-		download_list = download_list, thread_num = 1, time_sleep = 0.1,
-		queue_max_size = 1e6, url_max_size = 1e2, file_max_size = 1e11)
+sb = MiniSpider('%s/db' % retdir, '%s/page' % retdir, seeds, time_out = 1, piror_mode = 1,
+		white_list = download_list, download_list = download_list, thread_num = 10, time_sleep = 0.1,
+		queue_max_size = 1e6, url_max_size = 1e9, file_max_size = 1e12)
 
 if sb.prepare():
 	sb.run()

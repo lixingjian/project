@@ -39,7 +39,7 @@ def check_key(db_name, key):
 			break
 		else:
 		#except:
-			print('fatal: db init failed', file = sys.stdout)
+			print('fatal: db init failed', file = sys.stderr)
 			time.sleep(random.randint(0, 10) * 0.01)
 			continue
 		
@@ -57,7 +57,7 @@ def add_kv(db_name, key, val):
 			break
 		else:
 		#except:
-			print('fatal: db init failed', file = sys.stdout)
+			print('fatal: db init failed', file = sys.stderr)
 			time.sleep(random.randint(0, 10) * 0.01)
 			continue
 	while 1:
@@ -65,7 +65,7 @@ def add_kv(db_name, key, val):
 			db.Put(key, val)
 			break	
 		except:
-			print('fatal: db put failed', file = sys.stdout)
+			print('fatal: db put failed', file = sys.stderr)
 			continue
 
 
@@ -166,22 +166,19 @@ class MiniSpider:
 		headers['referer'] = '%d.%d.%d.%d' % (random.randint(10,100), random.randint(10,100), random.randint(10,100), random.randint(10,100))
 		page = b''
 		try:
-			#ip = proxyip.get_random_ip(headers)
-			ip = {'10.80.28.209':80}
-			proxy_support = urllib.request.ProxyHandler(ip)
-			opener = urllib.request.build_opener(proxy_support)
-			urllib.request.install_opener(opener)
-			#req = urllib.request.Request(url, headers = headers)
-			page = requests.get(url, headers=headers, proxies=ip).text.encode('utf-8')
+			req = urllib.request.Request(url, headers = headers)
 		except Exception as e:
-			print('warning: Error request %s, url=%s' % (e, url), file = sys.stdout)
-		'''
-		page = b''
-		try:
-			page = urllib.request.urlopen(url).read()	#type(page) = bytes
-		except Exception as e:
-			print('warning: Error Http %s, url=%s' % (e, url), file = sys.stdout)
-		'''
+			print('warning: Error request %s, url=%s' % (e, url), file = sys.stderr)
+		
+		retry = 0
+		while retry < 10:
+			try:
+				page = urllib.request.urlopen(url).read()	#type(page) = bytes
+				break
+			except Exception as e:
+				print('warning: Error Http %s, url=%s' % (e, url), file = sys.stderr)
+				time.sleep(random.randint(1,3))
+				retry += 1
 		return page
 
 	def check_page(self, url, page):
@@ -193,14 +190,9 @@ class MiniSpider:
 		try:
 			head = bytes('url: %s\npage: ' % url, encoding = 'utf-8')
 			tail = b'\n~EOF!\n'
-			if url.endswith('.pdf'):
-				cont = head + page + tail
-			else:
-				soup = BeautifulSoup(page, 'html.parser')
-				page = page.decode(soup.original_encoding).lower()
-				cont = head + bytes(page, encoding = 'utf-8') + tail
+			cont = head + page + tail
 		except:	
-			print(traceback.print_exc(), file = sys.stdout) 
+			print(traceback.print_exc(), file = sys.stderr) 
 			return 0
 
 		lock.acquire()
@@ -226,8 +218,8 @@ class MiniSpider:
 			try:
 				page = page.decode('utf-8')
 			except:
-				print('page decode failed', file = sys.stdout)
-				return 0 
+				print('page decode failed', file = sys.stderr)
+
 			for link in str_util.cut_windows(page, 'http%3a%2f%2f', '.pdf'):
 				if link.find('<') >= 0 or link.find('>') >= 0:	
 					continue
@@ -237,7 +229,6 @@ class MiniSpider:
 				#self.url_queue.append('http://' + urllib.parse.urlparse(link).netloc)
 				link_num += 1
 				lock.release()
-			return link_num
 
 		soup = BeautifulSoup(page, 'html.parser')
 		for a in soup.findAll('a',href=True):
@@ -252,38 +243,38 @@ class MiniSpider:
 				self.url_queue.append(link)
 				link_num += 1
 			else:	
-				print('warning: queue size exceed', file = sys.stdout)
+				print('warning: queue size exceed', file = sys.stderr)
 			lock.release()
 	
 		return link_num
 
 	def thread_work(self, tid):
 		while 1:
-			print('info: t%d, url_num=%d, queue_size=%d, file_size=%d' % (tid, self.url_num, len(self.url_queue), self.file_len_total))
+			print('info: t%d, url_num=%d, queue_size=%d, file_size=%d' % (tid, self.url_num, len(self.url_queue), self.file_len_total), file = sys.stderr)
 			url = self.pop_url()
-			print('t%d, pop_url %s' % (tid, url))
+			print('t%d, pop_url %s' % (tid, url), file = sys.stderr)
 			if url == '':
-				print('trace: thread %d exit' % tid, file = sys.stdout)
+				print('trace: thread %d exit' % tid, file = sys.stderr)
 				break
 			
 			page = self.crawl_url(url)
-			print('t%d, crawl_url %s, page size=%d' % (tid, url, len(page)))
+			print('t%d, crawl_url %s, page size=%d' % (tid, url, len(page)), file = sys.stderr)
 			if not self.check_page(url, page):
 				continue
 		
 			b_save = self.check_save(url)
-			print('t%d, check_save %s, valid=%d' % (tid, url, b_save))
+			print('t%d, check_save %s, valid=%d' % (tid, url, b_save), file = sys.stderr)
 			if b_save:
 				len_save = self.save_url(url, page)
-				print('t%d, save_url %s, size=%d' % (tid, url, len_save))
+				print('t%d, save_url %s, size=%d' % (tid, url, len_save), file = sys.stderr)
 			
 			link_num = self.parse_link(url, page)
-			print('t%d, parse_link %s, link_num=%d' % (tid, url, link_num))
+			print('t%d, parse_link %s, link_num=%d' % (tid, url, link_num), file = sys.stderr)
 			if self.url_num > self.url_max_size:
-				print('warning: url num exceed %d' % self.url_num, file = sys.stdout)
+				print('warning: url num exceed %d' % self.url_num, file = sys.stderr)
 				break
 			if self.file_len_total > self.file_max_size:
-				print('warning: file size exceed %d' % self.file_len_total, file = sys.stdout)
+				print('warning: file size exceed %d' % self.file_len_total, file = sys.stderr)
 				break
 			time.sleep(random.randint(0, 5) * self.time_sleep)
 
@@ -313,6 +304,6 @@ if __name__ == '__main__':
 	if sb.prepare():
 		sb.run()
 	else:
-		print('mini spider prepare failed', file = sys.stdout)
+		print('mini spider prepare failed', file = sys.stderr)
 
 
