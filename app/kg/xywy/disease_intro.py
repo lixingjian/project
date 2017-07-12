@@ -32,7 +32,8 @@ def parse_rate(ori):
 			rate = 1e-3
 	else:
 		rate = ratelist[0]
-	
+	if rate > 1 + 1e-6:
+		rate = 1e-5
 	rate = round(rate, 8)
 	return rate
 

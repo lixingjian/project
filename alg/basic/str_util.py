@@ -78,6 +78,22 @@ def num_extract(s):
 			merge_list.append(cur_unit)
 	return merge_list		
 
+def read_kv_file(filename):
+	ret = {}
+	for line in open(filename).readlines():
+		line = line.rstrip()
+		p = line.find('\t')
+		if p <= 0:
+			print('warning: invalid line %s' % line, file = sys.stderr)
+			continue
+		key = line[:p]
+		val = line[p+1:]
+		if key in ret:
+			print('warning: dumplicated key %s' % key, file = sys.stderr)
+			continue
+		ret[key] = val
+	return ret	
+
 if __name__ == '__main__':
 	for line in open('/home/work/data/unit_test/test.num_extract').readlines():
 		line = line.rstrip()
