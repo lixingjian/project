@@ -3,7 +3,7 @@ sys.path.append('../../../lib/dm/spider')
 import urllib
 from minisb import MiniSpider
 
-retdir = '/home/work/data/health_doc/sina'
+retdir = '/data/health_doc/sina'
 seeds = ['http://health.sina.com.cn', 
 		'http://health.sina.com.cn/hc/2017-07-07/doc-ifyfuzny3458968.shtml',
 		'http://health.sina.com.cn/d/2017-07-07/doc-ifyhwefp0200719.shtml']
