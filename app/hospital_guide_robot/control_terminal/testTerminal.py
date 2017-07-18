@@ -5,8 +5,6 @@ from testDiagnose import Diagnosis
 from testGuide import Guide
 import sys
 import json
-reload(sys)
-sys.setdefaultencoding("utf-8")
 import random
 
 #input content 
@@ -133,11 +131,11 @@ class Terminal:
 		self.isQues = self.selected.isFurtherQuestion()
 		while(self.isQues == True):#keep feeding 
 			self.furtherQuestion = self.selected.ifFurtherQuestion()
-			print self.furtherQuestion
+			print(self.furtherQuestion)
 			self.questionSynthesis(self.furtherQuestion)
 			self.dataPassDownWithQuestions()
-		print self.selected.outputContent
-		print self.inputContent['Interacting History']
+		print(self.selected.outputContent)
+		print(self.inputContent['Interacting History'])
 		#Add reset here in the future
 		return
 
