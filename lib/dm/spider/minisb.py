@@ -72,7 +72,7 @@ def add_kv(db_name, key, val):
 lock = threading.RLock()
 class MiniSpider:
     def __init__(self, url_db_dir, result_dir, entry_list, white_list = [], black_list = [], download_list = [], piror_mode = 0, 
-                thread_num = 1, time_out = 1, time_sleep = 1, queue_max_size = 1e6, url_max_size = 1e7, file_max_size = 1e10):
+                thread_num = 1, time_out = 1, time_sleep = 1, queue_max_size = 1e6, url_max_size = 1e7, file_max_size = 1e10, debug = 0):
 
         self.url_db_dir = url_db_dir
         self.result_dir = result_dir
@@ -89,6 +89,7 @@ class MiniSpider:
         self.queue_max_size = queue_max_size
         self.url_max_size = url_max_size
         self.file_max_size = file_max_size
+        self.debug = debug
 
     def prepare(self):
         self.url_num = 0
@@ -222,8 +223,10 @@ class MiniSpider:
                 link = get_site(ori_url) + link
                 if not link.startswith('http:'):
                     link = 'http://' + link
-            #print('link\t%s\t%s' % (ori_url, link))
-            if not self.check_link(link):
+            valid = self.check_link(link)        
+            if self.debug:        
+                print('link\t%s\t%s\t%d' % (ori_url, link, valid), file = sys.stderr)
+            if not valid:
                 continue
             new_url_list.append(link)
 
