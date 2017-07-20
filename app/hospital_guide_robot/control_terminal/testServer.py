@@ -1,4 +1,6 @@
 import sys, random, json
+sys.path.append('../bayesian')
+from predict_disease import Diagnosis
 
 chat_keys = ['好', '吗', '你']
 def testChat(request):
@@ -20,9 +22,13 @@ def testGuide(request):
 			response['weight'] = 0.6
 	return response		
 
+d = Diagnosis()
 diag_keys = ['疼', '痛', '痒', '头', '耳', '鼻', '眼', '嘴', '肚', '腿']
 res_list = ['挂号外科', '挂号内科', '请问是否发烧']
 def testDiagnose(request):
+	response = d.run(request)
+	return response		
+'''	
 	response = {'text': '', 'weight': 0, 'type': 'normal'}
 	js = json.loads(request, encoding = 'utf-8')
 	if len(js) > 1 and js[1]['response']['type'] == 'clarify':
@@ -38,3 +44,4 @@ def testDiagnose(request):
 			if text.find('请问') >= 0:
 				response['type'] = 'clarify'
 	return response		
+'''
