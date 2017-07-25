@@ -18,15 +18,40 @@ class Searching:
         self.searcher = self.ix.searcher()
         while 1:
             with self.ix.searcher() as searcher:
-                con = input('Search:')
-                self.results =self.searcher.find('title', con)
+                self.con = input('Search:')
+                self.results =self.searcher.find('title', self.con)
             print(self.results[0:5])
             print('xiayige')
             print(self.results[0]['content'])
     
     def getExecutiveLevel(self):
-        return
+        if self.result != []:
+            terms = self.con.split()
+            res = self.results[0]['content'].split()
+            ts = 0
+            tn = len(terms)
+            for i in terms:
+                tmps = 0
+                for j in res:
+                   if i == j:
+                        tmps += 1
+                tmps = tmps/len(res)
+                ts += tmps
+            ts = ts/tn
+            self.score = (ts*0.2)+0.5
+            return self.score
+        else:
+            return 0
+    
+    def run(self, jsData):
+        data = json.loads(jsData)
+        inputContent = data['Self Explaination']
+        with self.ix.searcher() as searcher:
+            self.con = inputContent
+            self.result = self.searcher.find('title', self.con)
+            returnFile = json.dumps(self.result[0:10], ensure_ascii = False)
+            self.outputContent = self.result
+            return returnFile
 
-s = Searching()
-s.testRun()
+        
 

@@ -6,6 +6,8 @@ from testGuide import Guide
 import sys
 import json
 import random
+sys.path.append("/home/work/github/project/app/hospital_guide_robot/general_knowledge_search/")
+from Search import Searching
 
 #input content 
 #json.loads(upstream)
@@ -47,7 +49,7 @@ upstreamData = json.dumps(inputContent , ensure_ascii = False)
 
 class Terminal:
 	#initialize
-	def __init__(self,upstreamData):
+    def __init__(self,upstreamData):
 		self.furtherQuestions = []
 		self.isFurtherQuestion = False
 		self.inputContent = json.loads(upstreamData)
@@ -57,10 +59,10 @@ class Terminal:
 	def selection(self):
 		e1 = getattr(self.c1,'currentExecutionLevel')
 		e2 = getattr(self.d1,'currentExecutionLevel')
-		e3 = getattr(self.g1,'currentExecutionLevel')
+		e3 = self.g1.getExecutiveLevel()
 		n1 = getattr(self.c1,'outputContent')
 		n2 = getattr(self.d1,'outputContent')
-		n3 = getattr(self.g1,'outputContent')
+		n3 = getattr(self.g1,'result')
 		eList = [e1,e2,e3]
 		self.sort(eList)
 		if(eList[0] == e1):
@@ -93,12 +95,13 @@ class Terminal:
 		return
 
 	#First time passing down data
-	def dataPassDown(self):
-		passDownContent = json.dumps(self.inputContent, ensure_ascii = False)
-		self.c1 = Chat(passDownContent)
-		self.d1 = Diagnosis(passDownContent)
-		self.g1 = Guide(passDownContent)		
-		return
+    def dataPassDown(self):
+        passDownContent = json.dumps(self.inputContent, ensure_ascii = False)
+        self.c1 = Chat(passDownContent)
+        self.d1 = Diagnosis(passDownContent)
+        self.g1 = Searching()
+        self.g1.run(passDownContent)
+		
 
 	#Pass down data from continous interaction
 	def dataPassDownWithQuestions(self):
@@ -110,8 +113,8 @@ class Terminal:
 			self.d1 = Diagnosis(passDownContent)
 			self.isQues = self.d1.isFurtherQuestion()
 		else:
-			self.g1 = Guide(passDownContent)
-			self.isQues = self.g1.isFurtherQuestion()
+			self.g1 = Guide()
+			self.isQues = False #self.g1.isFurtherQuestion()
 		return
 
 	#pass up data to interacting pannel
@@ -137,8 +140,7 @@ class Terminal:
 		print(self.selected.outputContent)
 		print(self.inputContent['Interacting History'])
 		#Add reset here in the future
-		return
-
+		return 
 t1 = Terminal(upstreamData)
 
 t1.run()
