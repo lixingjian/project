@@ -25,9 +25,9 @@ class Searching:
             print(self.results[0]['content'])
     
     def getExecutiveLevel(self):
-        if self.result != []:
+        if self.result[0:2] != []:
             terms = self.con.split()
-            res = self.results[0]['content'].split()
+            res = self.result[0]['content'].split()
             ts = 0
             tn = len(terms)
             for i in terms:
@@ -43,13 +43,28 @@ class Searching:
         else:
             return 0
     
+    def isFurtherQuestion(self):
+        return False
+
+    def packInfo(self, result):
+        if result[0:2] != []:
+            lst = []
+            for i in range(0,5):
+                dic = {}
+                dic[result[i]['title']] = result[i]['content']
+                lst.append(dic)
+            print(lst)
+            rtf = json.dumps(lst, ensure_ascii = False)
+            return rtf
+
     def run(self, jsData):
         data = json.loads(jsData)
         inputContent = data['Self Explaination']
+        self.searcher = self.ix.searcher()
         with self.ix.searcher() as searcher:
             self.con = inputContent
             self.result = self.searcher.find('title', self.con)
-            returnFile = json.dumps(self.result[0:10], ensure_ascii = False)
+            returnFile = self.packInfo(self.result[0:5])
             self.outputContent = self.result
             return returnFile
 

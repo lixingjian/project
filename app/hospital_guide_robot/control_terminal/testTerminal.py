@@ -11,7 +11,7 @@ from Search import Searching
 
 #input content 
 #json.loads(upstream)
-selfExplaination = ''
+selfExplaination = '糖sdd'
 inputType = ['userEnter','userSelection','userVoiceEnter']
 #Userinfo
 name = ''
@@ -46,53 +46,52 @@ upstreamData = json.dumps(inputContent , ensure_ascii = False)
 
 
 
-
 class Terminal:
-	#initialize
+    #initialize
     def __init__(self,upstreamData):
-		self.furtherQuestions = []
-		self.isFurtherQuestion = False
-		self.inputContent = json.loads(upstreamData)
-		self.dataPassDown()
+        self.furtherQuestions = []
+        self.isFurtherQuestion = False
+        self.inputContent = json.loads(upstreamData)
+        self.dataPassDown()
 
-	#Select the option with the highest execution level
-	def selection(self):
-		e1 = getattr(self.c1,'currentExecutionLevel')
-		e2 = getattr(self.d1,'currentExecutionLevel')
-		e3 = self.g1.getExecutiveLevel()
-		n1 = getattr(self.c1,'outputContent')
-		n2 = getattr(self.d1,'outputContent')
-		n3 = getattr(self.g1,'result')
-		eList = [e1,e2,e3]
-		self.sort(eList)
-		if(eList[0] == e1):
-			self.selected = self.c1
-			self.selectedNum = 1
-			return n1
-		elif(eList[0] == e2):
-			self.selected = self.d1
-			self.selectedNum = 2
-			return n2
-		else:
-			self.selected = self.g1
-			self.selectedNum = 3
-			return n3
+    #Select the option with the highest execution level
+    def selection(self):
+        e1 = getattr(self.c1,'currentExecutionLevel')
+        e2 = getattr(self.d1,'currentExecutionLevel')
+        e3 = self.g1.getExecutiveLevel()
+        n1 = getattr(self.c1,'outputContent')
+        n2 = getattr(self.d1,'outputContent')
+        n3 = getattr(self.g1,'result')
+        eList = [e1,e2,e3]
+        self.sort(eList)
+        if(eList[0] == e1):
+            self.selected = self.c1
+            self.selectedNum = 1
+            return n1
+        elif(eList[0] == e2):
+            self.selected = self.d1
+            self.selectedNum = 2
+            return n2
+        else:
+            self.selected = self.g1
+            self.selectedNum = 3
+            return n3
 
 	#SORT numbers, from big to small
-	def sort(self,l):
-		for i in range(1, len(l)):
-			j = i-1
-			key = l[i]
-			while (l[j] < key) and (j >= 0):
-				l[j+1] = l[j]
-				j -= 1
-			l[j+1] = key
+    def sort(self,l):
+        for i in range(1, len(l)):
+            j = i-1
+            key = l[i]
+            while (l[j] < key) and (j >= 0):
+                l[j+1] = l[j]
+                j -= 1
+            l[j+1] = key
 
 	#put questions and its answer into a dictionary
-	def questionSynthesis(self,question):
-		ans = self.getAnswerFromUpstream(self.furtherQuestion)
-		self.inputContent['Interacting History'][self.furtherQuestion] = ans
-		return
+    def questionSynthesis(self,question):
+        ans = self.getAnswerFromUpstream(self.furtherQuestion)
+        self.inputContent['Interacting History'][self.furtherQuestion] = ans
+        return
 
 	#First time passing down data
     def dataPassDown(self):
@@ -101,46 +100,46 @@ class Terminal:
         self.d1 = Diagnosis(passDownContent)
         self.g1 = Searching()
         self.g1.run(passDownContent)
-		
+
 
 	#Pass down data from continous interaction
-	def dataPassDownWithQuestions(self):
-		passDownContent = json.dumps(self.inputContent, ensure_ascii = False)
-		if(self.selectedNum == 1):
-			self.c1 = Chat(passDownContent)
-			self.isQues = self.c1.isFurtherQuestion()
-		elif(self.selectedNum == 2):
-			self.d1 = Diagnosis(passDownContent)
-			self.isQues = self.d1.isFurtherQuestion()
-		else:
-			self.g1 = Guide()
-			self.isQues = False #self.g1.isFurtherQuestion()
-		return
+    def dataPassDownWithQuestions(self):
+        passDownContent = json.dumps(self.inputContent, ensure_ascii = False)
+        if(self.selectedNum == 1):
+            self.c1 = Chat(passDownContent)
+            self.isQues = self.c1.isFurtherQuestion()
+        elif(self.selectedNum == 2):
+            self.d1 = Diagnosis(passDownContent)
+            self.isQues = self.d1.isFurtherQuestion()
+        else:
+            self.g1 = Guide()
+            self.isQues = False #self.g1.isFurtherQuestion()
+        return
 
 	#pass up data to interacting pannel
-	def dataPassUp(self):
-		return(self.furtherQuestion)
+    def dataPassUp(self):
+        return(self.furtherQuestion)
 
-	#SIMULATING GET ANSWER VOID
-	def getAnswerFromUpstream(self,furtherQuestion):
-		return('我头疼')
+    #SIMULATING GET ANSWER VOID
+    def getAnswerFromUpstream(self,furtherQuestion):
+        return('我头疼')
 
 	#Run method
-	def run(self):
-		self.upstreamData = json.loads(upstreamData)
-		self.dataPassDown()#First time pass down
-		self.selection()#Select the option with the highest execution level
-		#print self.selected.isFurtherQuestion()
-		self.isQues = self.selected.isFurtherQuestion()
-		while(self.isQues == True):#keep feeding 
-			self.furtherQuestion = self.selected.ifFurtherQuestion()
-			print(self.furtherQuestion)
-			self.questionSynthesis(self.furtherQuestion)
-			self.dataPassDownWithQuestions()
-		print(self.selected.outputContent)
-		print(self.inputContent['Interacting History'])
-		#Add reset here in the future
-		return 
+    def run(self):
+        self.upstreamData = json.loads(upstreamData)
+        self.dataPassDown()#First time pass down
+        self.selection()#Select the option with the highest execution level
+        #print self.selected.isFurtherQuestion()
+        self.isQues = self.selected.isFurtherQuestion()
+        while(self.isQues == True):#keep feeding 
+            self.furtherQuestion = self.selected.ifFurtherQuestion()
+            print(self.furtherQuestion)
+            self.questionSynthesis(self.furtherQuestion)
+            self.dataPassDownWithQuestions()
+        print(self.selected.outputContent)
+        print(self.inputContent['Interacting History'])
+        #Add reset here in the future
+        return 
 t1 = Terminal(upstreamData)
 
 t1.run()
