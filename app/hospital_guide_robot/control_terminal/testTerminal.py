@@ -1,22 +1,23 @@
 #!/usr/bin/python
 #coding=utf-8
 from testChat import Chat
-from testDiagnose import Diagnosis
 from testGuide import Guide
 import sys
 import json
 import random
 sys.path.append("/home/work/github/project/app/hospital_guide_robot/general_knowledge_search/")
 from Search import Searching
+sys.path.append("/home/work/github/project/app/hospital_guide_robot/bayesian")
+from Diagnose import Diagnosis
 
 #input content 
 #json.loads(upstream)
-selfExplaination = '糖sdd'
+selfExplaination = input('input:').rstrip()
 inputType = ['userEnter','userSelection','userVoiceEnter']
 #Userinfo
 name = ''
-sex = ''
-age = 0
+sex = 0
+age = 4
 race = ''
 address = ''
 allergicHistory = []
@@ -57,13 +58,15 @@ class Terminal:
     #Select the option with the highest execution level
     def selection(self):
         e1 = getattr(self.c1,'currentExecutionLevel')
-        e2 = getattr(self.d1,'currentExecutionLevel')
+        print(self.diagRes['weight'])
+        print(type(self.diagRes['weight']))
+        e2 = int(self.diagRes['weight'])
         e3 = self.g1.getExecutiveLevel()
         n1 = getattr(self.c1,'outputContent')
-        n2 = getattr(self.d1,'outputContent')
+        n2 = self.diagRes['text']
         n3 = getattr(self.g1,'result')
         eList = [e1,e2,e3]
-        self.sort(eList)
+        self.sorted(eList, reverse = True)
         if(eList[0] == e1):
             self.selected = self.c1
             self.selectedNum = 1
@@ -97,9 +100,10 @@ class Terminal:
     def dataPassDown(self):
         passDownContent = json.dumps(self.inputContent, ensure_ascii = False)
         self.c1 = Chat(passDownContent)
-        self.d1 = Diagnosis(passDownContent)
+        self.d1 = Diagnosis()
         self.g1 = Searching()
         self.g1.run(passDownContent)
+        self.diagRes = self.d1.run(passDownContent)
 
 
 	#Pass down data from continous interaction
@@ -109,8 +113,8 @@ class Terminal:
             self.c1 = Chat(passDownContent)
             self.isQues = self.c1.isFurtherQuestion()
         elif(self.selectedNum == 2):
-            self.d1 = Diagnosis(passDownContent)
-            self.isQues = self.d1.isFurtherQuestion()
+            self.d1 = Diagnosis()
+            self.isQues = False #self.d1.isFurtherQuestion()
         else:
             self.g1 = Guide()
             self.isQues = False #self.g1.isFurtherQuestion()
