@@ -78,6 +78,12 @@ def num_extract(s):
 			merge_list.append(cur_unit)
 	return merge_list		
 
+def read_lines(filename):
+    ret = []
+    for line in open(filename).readlines():
+        ret.append(line.rstrip())
+    return ret
+
 def read_kv_file(filename):
 	ret = {}
 	for line in open(filename).readlines():
