@@ -101,6 +101,17 @@ def read_kv_file(filename):
 	return ret	
 
 if __name__ == '__main__':
-	for line in open('/home/work/data/unit_test/test.num_extract').readlines():
-		line = line.rstrip()
-		print('%s\t%s' % (line, num_extract(line)))
+    use_func = sys.argv[1]
+    if use_func == 'subset':
+        s0 = tp.read_kv_file(sys.argv[1])
+        while 1:
+            try:
+                buf = input().rstrip()
+            except:
+                break
+            if not buf in s0:
+                print buf        
+    elif use_func == 'numext':    
+	    for line in open('/home/work/data/unit_test/test.num_extract').readlines():
+		    line = line.rstrip()
+		    print('%s\t%s' % (line, num_extract(line)))
