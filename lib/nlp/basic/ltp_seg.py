@@ -40,9 +40,12 @@ class LexParser:
 
     def __del__(self):
         self.segmentor.release()
-        self.postagger.release()  # 释放模型
-        self.recognizer.release()  # 释放模型
-        self.parser.release()  # 释放模型
+        if self.use_pos:
+            self.postagger.release()  # 释放模型
+        if self.use_ner:
+            self.recognizer.release()  # 释放模型
+        if self.use_parser:
+            self.parser.release()  # 释放模型
 
 lex = LexParser('/data/nlp/ltp_data')
 if __name__ == '__main__':
