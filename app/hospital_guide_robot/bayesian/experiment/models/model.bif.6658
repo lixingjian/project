@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3704 {
+    type discrete [ 2 ] { D3704_0, D3704_1 };
+}
+variable S4212 {
+    type discrete [ 2 ] { S4212_0, S4212_1 };
+}
+variable S4382 {
+    type discrete [ 2 ] { S4382_0, S4382_1 };
+}
+variable S555 {
+    type discrete [ 2 ] { S555_0, S555_1 };
+}
+variable S80 {
+    type discrete [ 2 ] { S80_0, S80_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3704 | AGE, SEX ) {
+    table 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 3.0439456674e-06, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054, 0.999996956054 ;
+}
+probability ( S4212 | D3704 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S4382 | D3704 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S555 | D3704 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S80 | D3704 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

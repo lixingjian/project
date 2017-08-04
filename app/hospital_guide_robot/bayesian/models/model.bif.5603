@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7165 {
+    type discrete [ 2 ] { D7165_0, D7165_1 };
+}
+variable S3034 {
+    type discrete [ 2 ] { S3034_0, S3034_1 };
+}
+variable S3763 {
+    type discrete [ 2 ] { S3763_0, S3763_1 };
+}
+variable S517 {
+    type discrete [ 2 ] { S517_0, S517_1 };
+}
+variable S81 {
+    type discrete [ 2 ] { S81_0, S81_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7165 | AGE, SEX ) {
+    table 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 5.41783335e-09, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582, 0.999999994582 ;
+}
+probability ( S3034 | D7165 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S3763 | D7165 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S517 | D7165 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S81 | D7165 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

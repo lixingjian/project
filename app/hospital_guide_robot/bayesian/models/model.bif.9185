@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D4827 {
+    type discrete [ 2 ] { D4827_0, D4827_1 };
+}
+variable S3132 {
+    type discrete [ 2 ] { S3132_0, S3132_1 };
+}
+variable S4482 {
+    type discrete [ 2 ] { S4482_0, S4482_1 };
+}
+variable S476 {
+    type discrete [ 2 ] { S476_0, S476_1 };
+}
+variable S5230 {
+    type discrete [ 2 ] { S5230_0, S5230_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D4827 | AGE, SEX ) {
+    table 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 5.00101667e-08, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999, 0.99999994999 ;
+}
+probability ( S3132 | D4827 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S4482 | D4827 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S476 | D4827 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S5230 | D4827 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

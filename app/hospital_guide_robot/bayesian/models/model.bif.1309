@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D187 {
+    type discrete [ 2 ] { D187_0, D187_1 };
+}
+variable S158 {
+    type discrete [ 2 ] { S158_0, S158_1 };
+}
+variable S281 {
+    type discrete [ 2 ] { S281_0, S281_1 };
+}
+variable S36 {
+    type discrete [ 2 ] { S36_0, S36_1 };
+}
+variable S362 {
+    type discrete [ 2 ] { S362_0, S362_1 };
+}
+variable S645 {
+    type discrete [ 2 ] { S645_0, S645_1 };
+}
+variable S721 {
+    type discrete [ 2 ] { S721_0, S721_1 };
+}
+variable S722 {
+    type discrete [ 2 ] { S722_0, S722_1 };
+}
+variable S723 {
+    type discrete [ 2 ] { S723_0, S723_1 };
+}
+variable S724 {
+    type discrete [ 2 ] { S724_0, S724_1 };
+}
+variable S73 {
+    type discrete [ 2 ] { S73_0, S73_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D187 | AGE, SEX ) {
+    table 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 9.1685e-13, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999, 0.999999999999 ;
+}
+probability ( S158 | D187 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S281 | D187 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S36 | D187 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S362 | D187 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S645 | D187 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S721 | D187 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S722 | D187 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S723 | D187 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S724 | D187 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S73 | D187 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

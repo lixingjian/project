@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D1587 {
+    type discrete [ 2 ] { D1587_0, D1587_1 };
+}
+variable S1060 {
+    type discrete [ 2 ] { S1060_0, S1060_1 };
+}
+variable S262 {
+    type discrete [ 2 ] { S262_0, S262_1 };
+}
+variable S3137 {
+    type discrete [ 2 ] { S3137_0, S3137_1 };
+}
+variable S3138 {
+    type discrete [ 2 ] { S3138_0, S3138_1 };
+}
+variable S770 {
+    type discrete [ 2 ] { S770_0, S770_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D1587 | AGE, SEX ) {
+    table 1.820002e-07, 1.820002e-07, 1.820002e-07, 1.820002e-07, 9.10001e-08, 9.10001e-08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.999999818, 0.999999818, 0.999999818, 0.999999818, 0.999999909, 0.999999909, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1060 | D1587 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S262 | D1587 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S3137 | D1587 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S3138 | D1587 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S770 | D1587 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

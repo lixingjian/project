@@ -1,0 +1,74 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D1250 {
+    type discrete [ 2 ] { D1250_0, D1250_1 };
+}
+variable S18 {
+    type discrete [ 2 ] { S18_0, S18_1 };
+}
+variable S198 {
+    type discrete [ 2 ] { S198_0, S198_1 };
+}
+variable S2189 {
+    type discrete [ 2 ] { S2189_0, S2189_1 };
+}
+variable S2731 {
+    type discrete [ 2 ] { S2731_0, S2731_1 };
+}
+variable S2732 {
+    type discrete [ 2 ] { S2732_0, S2732_1 };
+}
+variable S2733 {
+    type discrete [ 2 ] { S2733_0, S2733_1 };
+}
+variable S2734 {
+    type discrete [ 2 ] { S2734_0, S2734_1 };
+}
+variable S298 {
+    type discrete [ 2 ] { S298_0, S298_1 };
+}
+variable S616 {
+    type discrete [ 2 ] { S616_0, S616_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D1250 | AGE, SEX ) {
+    table 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 5.17028385e-09, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483, 0.99999999483 ;
+}
+probability ( S18 | D1250 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S198 | D1250 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S2189 | D1250 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S2731 | D1250 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S2732 | D1250 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S2733 | D1250 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S2734 | D1250 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S298 | D1250 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S616 | D1250 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

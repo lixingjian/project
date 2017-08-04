@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D225 {
+    type discrete [ 2 ] { D225_0, D225_1 };
+}
+variable S167 {
+    type discrete [ 2 ] { S167_0, S167_1 };
+}
+variable S30 {
+    type discrete [ 2 ] { S30_0, S30_1 };
+}
+variable S40 {
+    type discrete [ 2 ] { S40_0, S40_1 };
+}
+variable S447 {
+    type discrete [ 2 ] { S447_0, S447_1 };
+}
+variable S46 {
+    type discrete [ 2 ] { S46_0, S46_1 };
+}
+variable S494 {
+    type discrete [ 2 ] { S494_0, S494_1 };
+}
+variable S54 {
+    type discrete [ 2 ] { S54_0, S54_1 };
+}
+variable S636 {
+    type discrete [ 2 ] { S636_0, S636_1 };
+}
+variable S836 {
+    type discrete [ 2 ] { S836_0, S836_1 };
+}
+variable S837 {
+    type discrete [ 2 ] { S837_0, S837_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D225 | AGE, SEX ) {
+    table 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833 ;
+}
+probability ( S167 | D225 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S30 | D225 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S40 | D225 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S447 | D225 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S46 | D225 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S494 | D225 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S54 | D225 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S636 | D225 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S836 | D225 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S837 | D225 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

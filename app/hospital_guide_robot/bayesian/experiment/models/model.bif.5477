@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D608 {
+    type discrete [ 2 ] { D608_0, D608_1 };
+}
+variable S144 {
+    type discrete [ 2 ] { S144_0, S144_1 };
+}
+variable S204 {
+    type discrete [ 2 ] { S204_0, S204_1 };
+}
+variable S55 {
+    type discrete [ 2 ] { S55_0, S55_1 };
+}
+variable S606 {
+    type discrete [ 2 ] { S606_0, S606_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D608 | AGE, SEX ) {
+    table 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 4.16758335e-09, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832, 0.999999995832 ;
+}
+probability ( S144 | D608 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S204 | D608 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S55 | D608 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S606 | D608 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

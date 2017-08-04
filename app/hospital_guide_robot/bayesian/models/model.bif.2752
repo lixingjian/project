@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D8148 {
+    type discrete [ 2 ] { D8148_0, D8148_1 };
+}
+variable S19 {
+    type discrete [ 2 ] { S19_0, S19_1 };
+}
+variable S367 {
+    type discrete [ 2 ] { S367_0, S367_1 };
+}
+variable S5181 {
+    type discrete [ 2 ] { S5181_0, S5181_1 };
+}
+variable S61 {
+    type discrete [ 2 ] { S61_0, S61_1 };
+}
+variable S814 {
+    type discrete [ 2 ] { S814_0, S814_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D8148 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.849415e-11, 5.849415e-11, 5.849415e-11, 5.849415e-11, 5.849415e-11, 5.849415e-11, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999999999942, 0.999999999942, 0.999999999942, 0.999999999942, 0.999999999942, 0.999999999942 ;
+}
+probability ( S19 | D8148 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S367 | D8148 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S5181 | D8148 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S61 | D8148 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S814 | D8148 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

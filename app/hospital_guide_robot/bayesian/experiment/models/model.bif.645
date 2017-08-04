@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D1013 {
+    type discrete [ 2 ] { D1013_0, D1013_1 };
+}
+variable S1197 {
+    type discrete [ 2 ] { S1197_0, S1197_1 };
+}
+variable S2344 {
+    type discrete [ 2 ] { S2344_0, S2344_1 };
+}
+variable S2396 {
+    type discrete [ 2 ] { S2396_0, S2396_1 };
+}
+variable S2397 {
+    type discrete [ 2 ] { S2397_0, S2397_1 };
+}
+variable S2398 {
+    type discrete [ 2 ] { S2398_0, S2398_1 };
+}
+variable S308 {
+    type discrete [ 2 ] { S308_0, S308_1 };
+}
+variable S309 {
+    type discrete [ 2 ] { S309_0, S309_1 };
+}
+variable S321 {
+    type discrete [ 2 ] { S321_0, S321_1 };
+}
+variable S54 {
+    type discrete [ 2 ] { S54_0, S54_1 };
+}
+variable S85 {
+    type discrete [ 2 ] { S85_0, S85_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D1013 | AGE, SEX ) {
+    table 2.5014165e-10, 2.5014165e-10, 5.0035835e-10, 5.0035835e-10, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99999999975, 0.99999999975, 0.9999999995, 0.9999999995, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1197 | D1013 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S2344 | D1013 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S2396 | D1013 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S2397 | D1013 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S2398 | D1013 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S308 | D1013 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S309 | D1013 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S321 | D1013 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S54 | D1013 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S85 | D1013 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

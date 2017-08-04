@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7729 {
+    type discrete [ 2 ] { D7729_0, D7729_1 };
+}
+variable S1081 {
+    type discrete [ 2 ] { S1081_0, S1081_1 };
+}
+variable S239 {
+    type discrete [ 2 ] { S239_0, S239_1 };
+}
+variable S46 {
+    type discrete [ 2 ] { S46_0, S46_1 };
+}
+variable S4681 {
+    type discrete [ 2 ] { S4681_0, S4681_1 };
+}
+variable S5072 {
+    type discrete [ 2 ] { S5072_0, S5072_1 };
+}
+variable S54 {
+    type discrete [ 2 ] { S54_0, S54_1 };
+}
+variable S6344 {
+    type discrete [ 2 ] { S6344_0, S6344_1 };
+}
+variable S6345 {
+    type discrete [ 2 ] { S6345_0, S6345_1 };
+}
+variable S642 {
+    type discrete [ 2 ] { S642_0, S642_1 };
+}
+variable S71 {
+    type discrete [ 2 ] { S71_0, S71_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7729 | AGE, SEX ) {
+    table 3.7500075e-07, 3.7500075e-07, 3.7500075e-07, 3.7500075e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.999999624999, 0.999999624999, 0.999999624999, 0.999999624999, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1081 | D7729 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S239 | D7729 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S46 | D7729 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S4681 | D7729 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S5072 | D7729 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S54 | D7729 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S6344 | D7729 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S6345 | D7729 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S642 | D7729 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S71 | D7729 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D235 {
+    type discrete [ 2 ] { D235_0, D235_1 };
+}
+variable S81 {
+    type discrete [ 2 ] { S81_0, S81_1 };
+}
+variable S863 {
+    type discrete [ 2 ] { S863_0, S863_1 };
+}
+variable S864 {
+    type discrete [ 2 ] { S864_0, S864_1 };
+}
+variable S865 {
+    type discrete [ 2 ] { S865_0, S865_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D235 | AGE, SEX ) {
+    table 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 4.751108365e-08, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489, 0.999999952489 ;
+}
+probability ( S81 | D235 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S863 | D235 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S864 | D235 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S865 | D235 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

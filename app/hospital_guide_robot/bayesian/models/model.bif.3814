@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D8244 {
+    type discrete [ 2 ] { D8244_0, D8244_1 };
+}
+variable S364 {
+    type discrete [ 2 ] { S364_0, S364_1 };
+}
+variable S3681 {
+    type discrete [ 2 ] { S3681_0, S3681_1 };
+}
+variable S387 {
+    type discrete [ 2 ] { S387_0, S387_1 };
+}
+variable S575 {
+    type discrete [ 2 ] { S575_0, S575_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D8244 | AGE, SEX ) {
+    table 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 1.166958345e-08, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833, 0.99999998833 ;
+}
+probability ( S364 | D8244 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S3681 | D8244 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S387 | D8244 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S575 | D8244 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

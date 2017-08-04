@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5400 {
+    type discrete [ 2 ] { D5400_0, D5400_1 };
+}
+variable S1675 {
+    type discrete [ 2 ] { S1675_0, S1675_1 };
+}
+variable S1737 {
+    type discrete [ 2 ] { S1737_0, S1737_1 };
+}
+variable S239 {
+    type discrete [ 2 ] { S239_0, S239_1 };
+}
+variable S637 {
+    type discrete [ 2 ] { S637_0, S637_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5400 | AGE, SEX ) {
+    table 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 3.75083335e-09, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249, 0.999999996249 ;
+}
+probability ( S1675 | D5400 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S1737 | D5400 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S239 | D5400 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S637 | D5400 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7426 {
+    type discrete [ 2 ] { D7426_0, D7426_1 };
+}
+variable S1378 {
+    type discrete [ 2 ] { S1378_0, S1378_1 };
+}
+variable S4059 {
+    type discrete [ 2 ] { S4059_0, S4059_1 };
+}
+variable S497 {
+    type discrete [ 2 ] { S497_0, S497_1 };
+}
+variable S5543 {
+    type discrete [ 2 ] { S5543_0, S5543_1 };
+}
+variable S568 {
+    type discrete [ 2 ] { S568_0, S568_1 };
+}
+variable S6258 {
+    type discrete [ 2 ] { S6258_0, S6258_1 };
+}
+variable S6269 {
+    type discrete [ 2 ] { S6269_0, S6269_1 };
+}
+variable S6270 {
+    type discrete [ 2 ] { S6270_0, S6270_1 };
+}
+variable S6271 {
+    type discrete [ 2 ] { S6271_0, S6271_1 };
+}
+variable S675 {
+    type discrete [ 2 ] { S675_0, S675_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7426 | AGE, SEX ) {
+    table 2.5025e-10, 2.5025e-10, 2.5025e-10, 2.5025e-10, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99999999975, 0.99999999975, 0.99999999975, 0.99999999975, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1378 | D7426 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S4059 | D7426 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S497 | D7426 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S5543 | D7426 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S568 | D7426 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S6258 | D7426 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S6269 | D7426 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S6270 | D7426 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S6271 | D7426 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S675 | D7426 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

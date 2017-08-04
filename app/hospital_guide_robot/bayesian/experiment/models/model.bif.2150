@@ -1,0 +1,74 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3053 {
+    type discrete [ 2 ] { D3053_0, D3053_1 };
+}
+variable S265 {
+    type discrete [ 2 ] { S265_0, S265_1 };
+}
+variable S288 {
+    type discrete [ 2 ] { S288_0, S288_1 };
+}
+variable S30 {
+    type discrete [ 2 ] { S30_0, S30_1 };
+}
+variable S3642 {
+    type discrete [ 2 ] { S3642_0, S3642_1 };
+}
+variable S4006 {
+    type discrete [ 2 ] { S4006_0, S4006_1 };
+}
+variable S41 {
+    type discrete [ 2 ] { S41_0, S41_1 };
+}
+variable S4440 {
+    type discrete [ 2 ] { S4440_0, S4440_1 };
+}
+variable S4441 {
+    type discrete [ 2 ] { S4441_0, S4441_1 };
+}
+variable S853 {
+    type discrete [ 2 ] { S853_0, S853_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3053 | AGE, SEX ) {
+    table 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 1.6678335e-10, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833, 0.999999999833 ;
+}
+probability ( S265 | D3053 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S288 | D3053 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S30 | D3053 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S3642 | D3053 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S4006 | D3053 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S41 | D3053 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S4440 | D3053 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S4441 | D3053 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S853 | D3053 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

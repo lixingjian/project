@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5858 {
+    type discrete [ 2 ] { D5858_0, D5858_1 };
+}
+variable S161 {
+    type discrete [ 2 ] { S161_0, S161_1 };
+}
+variable S312 {
+    type discrete [ 2 ] { S312_0, S312_1 };
+}
+variable S322 {
+    type discrete [ 2 ] { S322_0, S322_1 };
+}
+variable S325 {
+    type discrete [ 2 ] { S325_0, S325_1 };
+}
+variable S42 {
+    type discrete [ 2 ] { S42_0, S42_1 };
+}
+variable S46 {
+    type discrete [ 2 ] { S46_0, S46_1 };
+}
+variable S463 {
+    type discrete [ 2 ] { S463_0, S463_1 };
+}
+variable S5209 {
+    type discrete [ 2 ] { S5209_0, S5209_1 };
+}
+variable S61 {
+    type discrete [ 2 ] { S61_0, S61_1 };
+}
+variable S77 {
+    type discrete [ 2 ] { S77_0, S77_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5858 | AGE, SEX ) {
+    table 5.001001667e-07, 0.0, 5.001001667e-07, 0.0, 5.001001667e-07, 0.0, 5.001001667e-07, 0.0, 5.001001667e-07, 0.0, 5.001001667e-07, 0.0, 0.9999994999, 1.0, 0.9999994999, 1.0, 0.9999994999, 1.0, 0.9999994999, 1.0, 0.9999994999, 1.0, 0.9999994999, 1.0 ;
+}
+probability ( S161 | D5858 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S312 | D5858 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S322 | D5858 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S325 | D5858 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S42 | D5858 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S46 | D5858 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S463 | D5858 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S5209 | D5858 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S61 | D5858 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S77 | D5858 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5031 {
+    type discrete [ 2 ] { D5031_0, D5031_1 };
+}
+variable S1160 {
+    type discrete [ 2 ] { S1160_0, S1160_1 };
+}
+variable S1342 {
+    type discrete [ 2 ] { S1342_0, S1342_1 };
+}
+variable S156 {
+    type discrete [ 2 ] { S156_0, S156_1 };
+}
+variable S2027 {
+    type discrete [ 2 ] { S2027_0, S2027_1 };
+}
+variable S252 {
+    type discrete [ 2 ] { S252_0, S252_1 };
+}
+variable S5472 {
+    type discrete [ 2 ] { S5472_0, S5472_1 };
+}
+variable S5476 {
+    type discrete [ 2 ] { S5476_0, S5476_1 };
+}
+variable S5522 {
+    type discrete [ 2 ] { S5522_0, S5522_1 };
+}
+variable S854 {
+    type discrete [ 2 ] { S854_0, S854_1 };
+}
+variable S856 {
+    type discrete [ 2 ] { S856_0, S856_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5031 | AGE, SEX ) {
+    table 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 1.25150025e-09, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748, 0.999999998748 ;
+}
+probability ( S1160 | D5031 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S1342 | D5031 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S156 | D5031 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S2027 | D5031 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S252 | D5031 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S5472 | D5031 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S5476 | D5031 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S5522 | D5031 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S854 | D5031 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S856 | D5031 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

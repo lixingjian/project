@@ -1,0 +1,38 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D8402 {
+    type discrete [ 2 ] { D8402_0, D8402_1 };
+}
+variable S1681 {
+    type discrete [ 2 ] { S1681_0, S1681_1 };
+}
+variable S212 {
+    type discrete [ 2 ] { S212_0, S212_1 };
+}
+variable S3792 {
+    type discrete [ 2 ] { S3792_0, S3792_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D8402 | AGE, SEX ) {
+    table 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 8.3358335e-10, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166, 0.999999999166 ;
+}
+probability ( S1681 | D8402 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S212 | D8402 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S3792 | D8402 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

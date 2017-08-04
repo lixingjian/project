@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D6548 {
+    type discrete [ 2 ] { D6548_0, D6548_1 };
+}
+variable S0 {
+    type discrete [ 2 ] { S0_0, S0_1 };
+}
+variable S1089 {
+    type discrete [ 2 ] { S1089_0, S1089_1 };
+}
+variable S47 {
+    type discrete [ 2 ] { S47_0, S47_1 };
+}
+variable S5 {
+    type discrete [ 2 ] { S5_0, S5_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D6548 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.750035e-07, 0.0, 1.750035e-07, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999999824996, 1.0, 0.999999824996, 1.0, 1.0 ;
+}
+probability ( S0 | D6548 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S1089 | D6548 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S47 | D6548 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S5 | D6548 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

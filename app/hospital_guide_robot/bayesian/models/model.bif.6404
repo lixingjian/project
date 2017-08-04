@@ -1,0 +1,56 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7549 {
+    type discrete [ 2 ] { D7549_0, D7549_1 };
+}
+variable S1809 {
+    type discrete [ 2 ] { S1809_0, S1809_1 };
+}
+variable S2430 {
+    type discrete [ 2 ] { S2430_0, S2430_1 };
+}
+variable S372 {
+    type discrete [ 2 ] { S372_0, S372_1 };
+}
+variable S45 {
+    type discrete [ 2 ] { S45_0, S45_1 };
+}
+variable S5606 {
+    type discrete [ 2 ] { S5606_0, S5606_1 };
+}
+variable S824 {
+    type discrete [ 2 ] { S824_0, S824_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7549 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.5075e-10, 0.0, 2.5025e-10, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999999999249, 1.0, 0.99999999975, 1.0, 1.0, 1.0 ;
+}
+probability ( S1809 | D7549 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S2430 | D7549 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S372 | D7549 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S45 | D7549 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S5606 | D7549 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S824 | D7549 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

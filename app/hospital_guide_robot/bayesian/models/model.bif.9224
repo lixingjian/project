@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D665 {
+    type discrete [ 2 ] { D665_0, D665_1 };
+}
+variable S107 {
+    type discrete [ 2 ] { S107_0, S107_1 };
+}
+variable S19 {
+    type discrete [ 2 ] { S19_0, S19_1 };
+}
+variable S486 {
+    type discrete [ 2 ] { S486_0, S486_1 };
+}
+variable S663 {
+    type discrete [ 2 ] { S663_0, S663_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D665 | AGE, SEX ) {
+    table 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 8.4184341835e-07, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157, 0.999999158157 ;
+}
+probability ( S107 | D665 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S19 | D665 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S486 | D665 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S663 | D665 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

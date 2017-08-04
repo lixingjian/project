@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D2253 {
+    type discrete [ 2 ] { D2253_0, D2253_1 };
+}
+variable S3803 {
+    type discrete [ 2 ] { S3803_0, S3803_1 };
+}
+variable S3804 {
+    type discrete [ 2 ] { S3804_0, S3804_1 };
+}
+variable S445 {
+    type discrete [ 2 ] { S445_0, S445_1 };
+}
+variable S81 {
+    type discrete [ 2 ] { S81_0, S81_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D2253 | AGE, SEX ) {
+    table 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 2.525505e-11, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975, 0.999999999975 ;
+}
+probability ( S3803 | D2253 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S3804 | D2253 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S445 | D2253 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S81 | D2253 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7381 {
+    type discrete [ 2 ] { D7381_0, D7381_1 };
+}
+variable S19 {
+    type discrete [ 2 ] { S19_0, S19_1 };
+}
+variable S21 {
+    type discrete [ 2 ] { S21_0, S21_1 };
+}
+variable S814 {
+    type discrete [ 2 ] { S814_0, S814_1 };
+}
+variable S88 {
+    type discrete [ 2 ] { S88_0, S88_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7381 | AGE, SEX ) {
+    table 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 5.00125005e-09, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999, 0.999999994999 ;
+}
+probability ( S19 | D7381 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S21 | D7381 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S814 | D7381 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S88 | D7381 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

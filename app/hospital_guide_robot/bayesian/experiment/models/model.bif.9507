@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5253 {
+    type discrete [ 2 ] { D5253_0, D5253_1 };
+}
+variable S15 {
+    type discrete [ 2 ] { S15_0, S15_1 };
+}
+variable S1655 {
+    type discrete [ 2 ] { S1655_0, S1655_1 };
+}
+variable S2631 {
+    type discrete [ 2 ] { S2631_0, S2631_1 };
+}
+variable S3038 {
+    type discrete [ 2 ] { S3038_0, S3038_1 };
+}
+variable S4601 {
+    type discrete [ 2 ] { S4601_0, S4601_1 };
+}
+variable S48 {
+    type discrete [ 2 ] { S48_0, S48_1 };
+}
+variable S5603 {
+    type discrete [ 2 ] { S5603_0, S5603_1 };
+}
+variable S764 {
+    type discrete [ 2 ] { S764_0, S764_1 };
+}
+variable S766 {
+    type discrete [ 2 ] { S766_0, S766_1 };
+}
+variable S982 {
+    type discrete [ 2 ] { S982_0, S982_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5253 | AGE, SEX ) {
+    table 5.999419998e-07, 5.999419998e-07, 1.2000640002e-06, 1.2000640002e-06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.999999400058, 0.999999400058, 0.999998799936, 0.999998799936, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S15 | D5253 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S1655 | D5253 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S2631 | D5253 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S3038 | D5253 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S4601 | D5253 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S48 | D5253 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S5603 | D5253 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S764 | D5253 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S766 | D5253 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S982 | D5253 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

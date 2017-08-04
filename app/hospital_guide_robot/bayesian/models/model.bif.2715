@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3981 {
+    type discrete [ 2 ] { D3981_0, D3981_1 };
+}
+variable S1707 {
+    type discrete [ 2 ] { S1707_0, S1707_1 };
+}
+variable S21 {
+    type discrete [ 2 ] { S21_0, S21_1 };
+}
+variable S24 {
+    type discrete [ 2 ] { S24_0, S24_1 };
+}
+variable S2584 {
+    type discrete [ 2 ] { S2584_0, S2584_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3981 | AGE, SEX ) {
+    table 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 7.5040005e-10, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925, 0.99999999925 ;
+}
+probability ( S1707 | D3981 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S21 | D3981 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S24 | D3981 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S2584 | D3981 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

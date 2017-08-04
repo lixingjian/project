@@ -1,0 +1,68 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5184 {
+    type discrete [ 2 ] { D5184_0, D5184_1 };
+}
+variable S113 {
+    type discrete [ 2 ] { S113_0, S113_1 };
+}
+variable S1159 {
+    type discrete [ 2 ] { S1159_0, S1159_1 };
+}
+variable S1307 {
+    type discrete [ 2 ] { S1307_0, S1307_1 };
+}
+variable S1717 {
+    type discrete [ 2 ] { S1717_0, S1717_1 };
+}
+variable S1719 {
+    type discrete [ 2 ] { S1719_0, S1719_1 };
+}
+variable S4352 {
+    type discrete [ 2 ] { S4352_0, S4352_1 };
+}
+variable S4476 {
+    type discrete [ 2 ] { S4476_0, S4476_1 };
+}
+variable S4524 {
+    type discrete [ 2 ] { S4524_0, S4524_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5184 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.6997728333e-06, 0.0, 1.1402281667e-06, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999994300227, 1.0, 0.999998859772, 1.0, 1.0, 1.0 ;
+}
+probability ( S113 | D5184 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S1159 | D5184 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S1307 | D5184 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S1717 | D5184 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S1719 | D5184 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S4352 | D5184 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S4476 | D5184 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S4524 | D5184 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

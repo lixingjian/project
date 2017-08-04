@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7445 {
+    type discrete [ 2 ] { D7445_0, D7445_1 };
+}
+variable S2112 {
+    type discrete [ 2 ] { S2112_0, S2112_1 };
+}
+variable S4623 {
+    type discrete [ 2 ] { S4623_0, S4623_1 };
+}
+variable S5547 {
+    type discrete [ 2 ] { S5547_0, S5547_1 };
+}
+variable S605 {
+    type discrete [ 2 ] { S605_0, S605_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7445 | AGE, SEX ) {
+    table 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 6.671334e-10, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333, 0.999999999333 ;
+}
+probability ( S2112 | D7445 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S4623 | D7445 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S5547 | D7445 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S605 | D7445 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

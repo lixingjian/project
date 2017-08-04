@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5089 {
+    type discrete [ 2 ] { D5089_0, D5089_1 };
+}
+variable S5546 {
+    type discrete [ 2 ] { S5546_0, S5546_1 };
+}
+variable S5547 {
+    type discrete [ 2 ] { S5547_0, S5547_1 };
+}
+variable S604 {
+    type discrete [ 2 ] { S604_0, S604_1 };
+}
+variable S605 {
+    type discrete [ 2 ] { S605_0, S605_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5089 | AGE, SEX ) {
+    table 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 2.0024004e-09, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998, 0.999999997998 ;
+}
+probability ( S5546 | D5089 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S5547 | D5089 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S604 | D5089 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S605 | D5089 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D6897 {
+    type discrete [ 2 ] { D6897_0, D6897_1 };
+}
+variable S108 {
+    type discrete [ 2 ] { S108_0, S108_1 };
+}
+variable S51 {
+    type discrete [ 2 ] { S51_0, S51_1 };
+}
+variable S696 {
+    type discrete [ 2 ] { S696_0, S696_1 };
+}
+variable S799 {
+    type discrete [ 2 ] { S799_0, S799_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D6897 | AGE, SEX ) {
+    table 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 3.3341667e-09, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666, 0.999999996666 ;
+}
+probability ( S108 | D6897 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S51 | D6897 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S696 | D6897 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S799 | D6897 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

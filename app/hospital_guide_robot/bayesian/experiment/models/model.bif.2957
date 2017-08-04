@@ -1,0 +1,68 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D4187 {
+    type discrete [ 2 ] { D4187_0, D4187_1 };
+}
+variable S1224 {
+    type discrete [ 2 ] { S1224_0, S1224_1 };
+}
+variable S165 {
+    type discrete [ 2 ] { S165_0, S165_1 };
+}
+variable S1691 {
+    type discrete [ 2 ] { S1691_0, S1691_1 };
+}
+variable S1828 {
+    type discrete [ 2 ] { S1828_0, S1828_1 };
+}
+variable S220 {
+    type discrete [ 2 ] { S220_0, S220_1 };
+}
+variable S3369 {
+    type discrete [ 2 ] { S3369_0, S3369_1 };
+}
+variable S5094 {
+    type discrete [ 2 ] { S5094_0, S5094_1 };
+}
+variable S5139 {
+    type discrete [ 2 ] { S5139_0, S5139_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D4187 | AGE, SEX ) {
+    table 0.0, 0.0, 1.816815e-07, 1.816815e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.999999818319, 0.999999818319, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1224 | D4187 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S165 | D4187 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S1691 | D4187 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S1828 | D4187 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S220 | D4187 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S3369 | D4187 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S5094 | D4187 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S5139 | D4187 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

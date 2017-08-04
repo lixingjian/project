@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D302 {
+    type discrete [ 2 ] { D302_0, D302_1 };
+}
+variable S1035 {
+    type discrete [ 2 ] { S1035_0, S1035_1 };
+}
+variable S1036 {
+    type discrete [ 2 ] { S1036_0, S1036_1 };
+}
+variable S1037 {
+    type discrete [ 2 ] { S1037_0, S1037_1 };
+}
+variable S156 {
+    type discrete [ 2 ] { S156_0, S156_1 };
+}
+variable S925 {
+    type discrete [ 2 ] { S925_0, S925_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D302 | AGE, SEX ) {
+    table 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 3.198973e-10, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968, 0.99999999968 ;
+}
+probability ( S1035 | D302 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S1036 | D302 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S1037 | D302 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S156 | D302 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S925 | D302 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

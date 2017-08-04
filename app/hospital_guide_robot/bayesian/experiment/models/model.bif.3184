@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3841 {
+    type discrete [ 2 ] { D3841_0, D3841_1 };
+}
+variable S190 {
+    type discrete [ 2 ] { S190_0, S190_1 };
+}
+variable S2240 {
+    type discrete [ 2 ] { S2240_0, S2240_1 };
+}
+variable S30 {
+    type discrete [ 2 ] { S30_0, S30_1 };
+}
+variable S392 {
+    type discrete [ 2 ] { S392_0, S392_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3841 | AGE, SEX ) {
+    table 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 1.00028335e-09, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999, 0.999999999 ;
+}
+probability ( S190 | D3841 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S2240 | D3841 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S30 | D3841 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S392 | D3841 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,26 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5365 {
+    type discrete [ 2 ] { D5365_0, D5365_1 };
+}
+variable S2507 {
+    type discrete [ 2 ] { S2507_0, S2507_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5365 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.300002e-07, 0.0, 1.300002e-07, 0.0, 3.900006e-07, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.99999987, 1.0, 0.99999987, 1.0, 0.999999609999 ;
+}
+probability ( S2507 | D5365 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

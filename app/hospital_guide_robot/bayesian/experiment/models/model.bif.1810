@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D2492 {
+    type discrete [ 2 ] { D2492_0, D2492_1 };
+}
+variable S1061 {
+    type discrete [ 2 ] { S1061_0, S1061_1 };
+}
+variable S1112 {
+    type discrete [ 2 ] { S1112_0, S1112_1 };
+}
+variable S1244 {
+    type discrete [ 2 ] { S1244_0, S1244_1 };
+}
+variable S4020 {
+    type discrete [ 2 ] { S4020_0, S4020_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D2492 | AGE, SEX ) {
+    table 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 8.335008335e-08, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665, 0.99999991665 ;
+}
+probability ( S1061 | D2492 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S1112 | D2492 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S1244 | D2492 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S4020 | D2492 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

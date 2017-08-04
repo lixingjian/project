@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D7284 {
+    type discrete [ 2 ] { D7284_0, D7284_1 };
+}
+variable S1420 {
+    type discrete [ 2 ] { S1420_0, S1420_1 };
+}
+variable S2012 {
+    type discrete [ 2 ] { S2012_0, S2012_1 };
+}
+variable S4325 {
+    type discrete [ 2 ] { S4325_0, S4325_1 };
+}
+variable S5007 {
+    type discrete [ 2 ] { S5007_0, S5007_1 };
+}
+variable S6233 {
+    type discrete [ 2 ] { S6233_0, S6233_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D7284 | AGE, SEX ) {
+    table 6.66733335e-09, 6.66733335e-09, 3.33316665e-09, 3.33316665e-09, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.999999993333, 0.999999993333, 0.999999996667, 0.999999996667, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1420 | D7284 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S2012 | D7284 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S4325 | D7284 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S5007 | D7284 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S6233 | D7284 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

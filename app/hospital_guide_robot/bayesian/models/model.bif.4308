@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D4299 {
+    type discrete [ 2 ] { D4299_0, D4299_1 };
+}
+variable S1219 {
+    type discrete [ 2 ] { S1219_0, S1219_1 };
+}
+variable S29 {
+    type discrete [ 2 ] { S29_0, S29_1 };
+}
+variable S380 {
+    type discrete [ 2 ] { S380_0, S380_1 };
+}
+variable S422 {
+    type discrete [ 2 ] { S422_0, S422_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D4299 | AGE, SEX ) {
+    table 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 1.6671667e-09, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333, 0.999999998333 ;
+}
+probability ( S1219 | D4299 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S29 | D4299 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S380 | D4299 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S422 | D4299 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

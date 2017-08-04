@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D1137 {
+    type discrete [ 2 ] { D1137_0, D1137_1 };
+}
+variable S1157 {
+    type discrete [ 2 ] { S1157_0, S1157_1 };
+}
+variable S1290 {
+    type discrete [ 2 ] { S1290_0, S1290_1 };
+}
+variable S1634 {
+    type discrete [ 2 ] { S1634_0, S1634_1 };
+}
+variable S248 {
+    type discrete [ 2 ] { S248_0, S248_1 };
+}
+variable S2589 {
+    type discrete [ 2 ] { S2589_0, S2589_1 };
+}
+variable S2590 {
+    type discrete [ 2 ] { S2590_0, S2590_1 };
+}
+variable S2591 {
+    type discrete [ 2 ] { S2591_0, S2591_1 };
+}
+variable S362 {
+    type discrete [ 2 ] { S362_0, S362_1 };
+}
+variable S71 {
+    type discrete [ 2 ] { S71_0, S71_1 };
+}
+variable S75 {
+    type discrete [ 2 ] { S75_0, S75_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D1137 | AGE, SEX ) {
+    table 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 2.6680335e-10, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733, 0.999999999733 ;
+}
+probability ( S1157 | D1137 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S1290 | D1137 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S1634 | D1137 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S248 | D1137 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S2589 | D1137 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S2590 | D1137 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S2591 | D1137 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S362 | D1137 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S71 | D1137 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S75 | D1137 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

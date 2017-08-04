@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D5262 {
+    type discrete [ 2 ] { D5262_0, D5262_1 };
+}
+variable S1268 {
+    type discrete [ 2 ] { S1268_0, S1268_1 };
+}
+variable S1561 {
+    type discrete [ 2 ] { S1561_0, S1561_1 };
+}
+variable S2019 {
+    type discrete [ 2 ] { S2019_0, S2019_1 };
+}
+variable S2401 {
+    type discrete [ 2 ] { S2401_0, S2401_1 };
+}
+variable S5606 {
+    type discrete [ 2 ] { S5606_0, S5606_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D5262 | AGE, SEX ) {
+    table 9.0018e-08, 9.0018e-08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.999999909982, 0.999999909982, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ;
+}
+probability ( S1268 | D5262 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S1561 | D5262 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S2019 | D5262 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S2401 | D5262 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S5606 | D5262 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

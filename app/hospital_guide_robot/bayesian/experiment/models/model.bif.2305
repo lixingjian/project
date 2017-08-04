@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D950 {
+    type discrete [ 2 ] { D950_0, D950_1 };
+}
+variable S2288 {
+    type discrete [ 2 ] { S2288_0, S2288_1 };
+}
+variable S318 {
+    type discrete [ 2 ] { S318_0, S318_1 };
+}
+variable S828 {
+    type discrete [ 2 ] { S828_0, S828_1 };
+}
+variable S829 {
+    type discrete [ 2 ] { S829_0, S829_1 };
+}
+variable S831 {
+    type discrete [ 2 ] { S831_0, S831_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D950 | AGE, SEX ) {
+    table 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 1.178569e-10, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882, 0.999999999882 ;
+}
+probability ( S2288 | D950 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S318 | D950 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S828 | D950 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S829 | D950 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S831 | D950 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

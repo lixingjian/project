@@ -1,0 +1,62 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D6852 {
+    type discrete [ 2 ] { D6852_0, D6852_1 };
+}
+variable S1309 {
+    type discrete [ 2 ] { S1309_0, S1309_1 };
+}
+variable S2618 {
+    type discrete [ 2 ] { S2618_0, S2618_1 };
+}
+variable S2764 {
+    type discrete [ 2 ] { S2764_0, S2764_1 };
+}
+variable S3633 {
+    type discrete [ 2 ] { S3633_0, S3633_1 };
+}
+variable S4756 {
+    type discrete [ 2 ] { S4756_0, S4756_1 };
+}
+variable S476 {
+    type discrete [ 2 ] { S476_0, S476_1 };
+}
+variable S492 {
+    type discrete [ 2 ] { S492_0, S492_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D6852 | AGE, SEX ) {
+    table 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 8.810095e-11, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912, 0.999999999912 ;
+}
+probability ( S1309 | D6852 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S2618 | D6852 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S2764 | D6852 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S3633 | D6852 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S4756 | D6852 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S476 | D6852 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S492 | D6852 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

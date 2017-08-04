@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3926 {
+    type discrete [ 2 ] { D3926_0, D3926_1 };
+}
+variable S1368 {
+    type discrete [ 2 ] { S1368_0, S1368_1 };
+}
+variable S1661 {
+    type discrete [ 2 ] { S1661_0, S1661_1 };
+}
+variable S2069 {
+    type discrete [ 2 ] { S2069_0, S2069_1 };
+}
+variable S260 {
+    type discrete [ 2 ] { S260_0, S260_1 };
+}
+variable S3198 {
+    type discrete [ 2 ] { S3198_0, S3198_1 };
+}
+variable S3201 {
+    type discrete [ 2 ] { S3201_0, S3201_1 };
+}
+variable S3347 {
+    type discrete [ 2 ] { S3347_0, S3347_1 };
+}
+variable S4991 {
+    type discrete [ 2 ] { S4991_0, S4991_1 };
+}
+variable S4992 {
+    type discrete [ 2 ] { S4992_0, S4992_1 };
+}
+variable S4993 {
+    type discrete [ 2 ] { S4993_0, S4993_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3926 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.7686575602e-06, 0.0, 1.3843287801e-06, 0.0, 6.924066597e-07, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999997231342, 1.0, 0.999998615671, 1.0, 0.999999307593, 1.0 ;
+}
+probability ( S1368 | D3926 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S1661 | D3926 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S2069 | D3926 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S260 | D3926 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S3198 | D3926 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( S3201 | D3926 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S3347 | D3926 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S4991 | D3926 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S4992 | D3926 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S4993 | D3926 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D140 {
+    type discrete [ 2 ] { D140_0, D140_1 };
+}
+variable S601 {
+    type discrete [ 2 ] { S601_0, S601_1 };
+}
+variable S602 {
+    type discrete [ 2 ] { S602_0, S602_1 };
+}
+variable S603 {
+    type discrete [ 2 ] { S603_0, S603_1 };
+}
+variable S604 {
+    type discrete [ 2 ] { S604_0, S604_1 };
+}
+variable S605 {
+    type discrete [ 2 ] { S605_0, S605_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D140 | AGE, SEX ) {
+    table 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 2.08375004168e-05, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625, 0.9999791625 ;
+}
+probability ( S601 | D140 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S602 | D140 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S603 | D140 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S604 | D140 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S605 | D140 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

@@ -1,0 +1,44 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D8153 {
+    type discrete [ 2 ] { D8153_0, D8153_1 };
+}
+variable S2541 {
+    type discrete [ 2 ] { S2541_0, S2541_1 };
+}
+variable S2543 {
+    type discrete [ 2 ] { S2543_0, S2543_1 };
+}
+variable S2544 {
+    type discrete [ 2 ] { S2544_0, S2544_1 };
+}
+variable S5946 {
+    type discrete [ 2 ] { S5946_0, S5946_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D8153 | AGE, SEX ) {
+    table 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 1.2603150126e-06, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685, 0.999998739685 ;
+}
+probability ( S2541 | D8153 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S2543 | D8153 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S2544 | D8153 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S5946 | D8153 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

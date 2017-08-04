@@ -1,0 +1,50 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D3931 {
+    type discrete [ 2 ] { D3931_0, D3931_1 };
+}
+variable S129 {
+    type discrete [ 2 ] { S129_0, S129_1 };
+}
+variable S132 {
+    type discrete [ 2 ] { S132_0, S132_1 };
+}
+variable S293 {
+    type discrete [ 2 ] { S293_0, S293_1 };
+}
+variable S3817 {
+    type discrete [ 2 ] { S3817_0, S3817_1 };
+}
+variable S539 {
+    type discrete [ 2 ] { S539_0, S539_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D3931 | AGE, SEX ) {
+    table 1.68367e-11, 0.0, 1.68367e-11, 0.0, 1.68367e-11, 0.0, 1.68367e-11, 0.0, 1.68367e-11, 0.0, 1.68367e-11, 0.0, 0.999999999983, 1.0, 0.999999999983, 1.0, 0.999999999983, 1.0, 0.999999999983, 1.0, 0.999999999983, 1.0, 0.999999999983, 1.0 ;
+}
+probability ( S129 | D3931 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S132 | D3931 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S293 | D3931 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S3817 | D3931 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S539 | D3931 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}

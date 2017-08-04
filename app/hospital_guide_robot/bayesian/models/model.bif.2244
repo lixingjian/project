@@ -1,0 +1,80 @@
+network unknown {
+}
+variable AGE {
+    type discrete [ 6 ] { AGE_0, AGE_1, AGE_2, AGE_3, AGE_4, AGE_5 };
+}
+variable D4664 {
+    type discrete [ 2 ] { D4664_0, D4664_1 };
+}
+variable S1618 {
+    type discrete [ 2 ] { S1618_0, S1618_1 };
+}
+variable S19 {
+    type discrete [ 2 ] { S19_0, S19_1 };
+}
+variable S1978 {
+    type discrete [ 2 ] { S1978_0, S1978_1 };
+}
+variable S23 {
+    type discrete [ 2 ] { S23_0, S23_1 };
+}
+variable S3302 {
+    type discrete [ 2 ] { S3302_0, S3302_1 };
+}
+variable S353 {
+    type discrete [ 2 ] { S353_0, S353_1 };
+}
+variable S367 {
+    type discrete [ 2 ] { S367_0, S367_1 };
+}
+variable S509 {
+    type discrete [ 2 ] { S509_0, S509_1 };
+}
+variable S5182 {
+    type discrete [ 2 ] { S5182_0, S5182_1 };
+}
+variable S814 {
+    type discrete [ 2 ] { S814_0, S814_1 };
+}
+variable SEX {
+    type discrete [ 2 ] { SEX_0, SEX_1 };
+}
+probability ( AGE ) {
+    table 0.1, 0.1, 0.2, 0.2, 0.2, 0.2 ;
+}
+probability ( D4664 | AGE, SEX ) {
+    table 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0848915e-10, 1.0848915e-10, 1.0848915e-10, 1.0848915e-10, 1.0848915e-10, 1.0848915e-10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.999999999892, 0.999999999892, 0.999999999892, 0.999999999892, 0.999999999892, 0.999999999892 ;
+}
+probability ( S1618 | D4664 ) {
+    table 0.8, 0.333333333333, 0.2, 0.666666666667 ;
+}
+probability ( S19 | D4664 ) {
+    table 0.8, 1.0, 0.2, 0.0 ;
+}
+probability ( S1978 | D4664 ) {
+    table 0.8, 0.111111111111, 0.2, 0.888888888889 ;
+}
+probability ( S23 | D4664 ) {
+    table 0.8, 0.142857142857, 0.2, 0.857142857143 ;
+}
+probability ( S3302 | D4664 ) {
+    table 0.8, 0.2, 0.2, 0.8 ;
+}
+probability ( S353 | D4664 ) {
+    table 0.8, 0.5, 0.2, 0.5 ;
+}
+probability ( S367 | D4664 ) {
+    table 0.8, 0.166666666667, 0.2, 0.833333333333 ;
+}
+probability ( S509 | D4664 ) {
+    table 0.8, 0.1, 0.2, 0.9 ;
+}
+probability ( S5182 | D4664 ) {
+    table 0.8, 0.25, 0.2, 0.75 ;
+}
+probability ( S814 | D4664 ) {
+    table 0.8, 0.125, 0.2, 0.875 ;
+}
+probability ( SEX ) {
+    table 0.5, 0.5 ;
+}
