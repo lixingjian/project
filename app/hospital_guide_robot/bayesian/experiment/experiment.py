@@ -42,7 +42,7 @@ def main():
 
     # Process the natural language and extract keywords
     matcher = Match()
-    matcher.load("disease_symptom.json")
+    matcher.load("disease_symptom.json", "disease_organ.json")
 
     # Modify the output of the model for better classification of departments
     deptSynFile = open('synDept.txt', 'r')

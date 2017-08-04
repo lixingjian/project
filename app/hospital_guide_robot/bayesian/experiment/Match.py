@@ -15,6 +15,8 @@ Update(Aug 3, 2017) Made some improvements
 1. Fixed a bug in wordInSym()
 2. Now the program can extract disease names from description
 
+Update(Aug 4, 2017) Include the function to extract organ keywords
+
 NOTE: Use Python 3.5 to run
 """
 
@@ -27,20 +29,30 @@ class Match:
         self.ac = ahocorasick.Automaton()
         self.synAc = ahocorasick.Automaton()
 
-    def load(self, fileName):
+    def load(self, fileName, organFile):
+        # Take in disease symptoms, names and related organs 
         result = []
         # Read the file in utf-8 to display Chinese characters
         inputData = codecs.open (fileName, 'r', 'utf-8')
+        organData = codecs.open(organFile, 'r', 'utf-8')
         for line in inputData:
             currContent = json.loads(line)
             sym = currContent.get("symptoms")
             tuples = sym.items()
             for eachTuple in tuples:
-                if eachTuple[0] not in result:
+                if not eachTuple[0] in result:
                     result.append(eachTuple[0])
                     self.ac.add_word(eachTuple[0], eachTuple[0])
             disease = currContent.get("name")
             self.ac.add_word(disease, disease)
+        curr = json.load(organData)
+        for ele in curr:
+            # ele is a dict
+            organs = ele.get("organ")
+            for eachTuple in organs.items():
+                if not eachTuple[0] in result:
+                    result.append(eachTuple[0])
+                    self.ac.add_word(eachTuple[0], eachTuple[0])
     
     def match(self, description, synFileName, sympFileName):
         # Process the description, removing adverbs and punctuations
@@ -123,7 +135,7 @@ class Match:
 
 if __name__ == '__main__':
     matcher = Match()
-    matcher.load('disease_symptom.json')
+    matcher.load('disease_symptom.json', 'disease_organ.json')
     res = matcher.match(input(u'请输入症状描述: '),
     'syn1.txt','disease_symptom.json')
     print(res)
