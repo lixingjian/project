@@ -84,7 +84,7 @@ def read_lines(filename):
         ret.append(line.rstrip())
     return ret
 
-def read_kv_file(filename, read_value = True):
+def read_kv_file(filename, read_value = True, value_type = 'string'):
     ret = {}
     for line in open(filename).readlines():
         line = line.rstrip()
@@ -101,6 +101,8 @@ def read_kv_file(filename, read_value = True):
         if key in ret:
             print('warning: dumplicated key %s' % key, file = sys.stderr)
             continue
+        if value_type == 'float':
+            val = float(val)
         ret[key] = val
     return ret    
 

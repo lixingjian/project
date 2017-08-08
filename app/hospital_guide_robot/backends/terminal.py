@@ -26,20 +26,52 @@ response_template = {
     }
 
 
-d = Diagnosis()
-def run_diagnose(req_list):
-    return d.run(req_list)
+multi_interactive = False
+class Terminal:
+    def __init__(self):
+        self.history = {}
+        self.serv_list = [Diagnosis(), Searching(), ChatterBot()]
 
-g = Searching()
-def run_guide(req_list):
-    return g.run(req_list)
+    def question_wei(self, q):
+        wei_list = [0, 1, 1]
+        if (q.find('挂') > 0 or q.find('看') > 0) and q.find('科') > 0:
+            wei_list = [1, 0, 0]
+        if q.find('在哪') > 0 or q.find('怎么走') > 0:
+            wei_list = [0, 1, 0]
+        return wei_list
 
-c = ChatterBot()
-def run_chat(req_list):
-    return c.run(req_list)
+    def run(self, request):
+        if len(request['request']['text']) < 2:
+            return copy.deepcopy(response_template)
 
-serv_list = [d, g, c]
+        uid = request['user']['uid']
+        if not uid in self.history:
+            self.history[uid] = []
+        self.history[uid].append([request, None])
+        
+        req_list = []
+        if multi_interactive:
+            for req, res in self.history[uid]:
+                req_list.append(req)
+        else:
+            req_list.append(request)
 
+        candidates = []
+        for i in range(len(self.serv_list)):
+            serv = self.serv_list[i]
+            res = serv.run(req_list)
+            res['src'] = i
+            res['wei'] *= self.question_wei(req_list[0]['request']['text'])[i]
+            candidates.append(res)
+            print(res)
+
+        response = sorted(candidates, key=lambda d:d['wei'], reverse=True)[0]
+        if len(self.history[uid]) > 3:    
+            self.history[uid].pop(0)
+        self.history[uid][-1][1] = response
+        return response
+
+'''
 def fake_input(buf, uid = 0):
     request = copy.deepcopy(request_template)
     user_info = request['user']
@@ -50,29 +82,6 @@ def fake_input(buf, uid = 0):
     request['request']['text'] = buf.strip()
     request['request']['type'] = 0
     return request
-
-class Terminal:
-    def __init__(self):
-        self.history = {}
-
-    def run(self, request):
-        uid = request['user']['uid']
-        if not uid in self.history:
-            self.history[uid] = []
-        self.history[uid].append([request, None])
-        req_list = []
-        for req, res in self.history[uid]:
-            req_list.append(req)
-
-        candidates = []
-        for serv in serv_list:
-            res = serv.run(req_list)
-            candidates.append(res)
-        response = sorted(candidates, key=lambda d:d['wei'], reverse=True)[0]
-        if len(self.history[uid]) > 3:    
-            self.history[uid].pop(0)
-        self.history[uid][-1][1] = response
-        return response
 
 sex_str = ['女', '男']
 user_list = [(1, 'Tom', 1, 2), (2, 'Bill', 1, 65), (3, 'Lucy', 0, 28)]
@@ -93,3 +102,4 @@ while 1:
     res = t.run(request)['text']
     print('response: ' + res)
     iters -= 1
+'''    

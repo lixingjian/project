@@ -40,10 +40,17 @@ def resort(query, res_list):
     ret_list = []
     for article in res_list:
         title = article['title'].split('_')[0]
-        wei = 1.0 * (str_util.lcs_len(query, title) + 1)/ min(len(query) + 1, len(title) + 1)
+        
+        wlist1 = lex.run(query)[0]
+        wlist2 = lex.run(title)[0]
+        qt_match_score = lex.sim(wlist1, wlist2)
+        
+        doc_len_score = 1
         m = len(article['content'])
-        if m > 10:
-            wei /= math.log10(m)
+        if m > 50:
+            doc_len_score /= math.log10(m / 5)  #优先展现较短的文章
 
+        wei = qt_match_score * doc_len_score
+        
         ret_list.append((article, wei))
     return sorted(ret_list, key = lambda d:d[1], reverse = True)
