@@ -17,6 +17,8 @@ Update(Aug 3, 2017) Made some improvements
 
 Update(Aug 4, 2017) Include the function to extract organ keywords
 
+Update(Aug 8, 2017) Small change in match to fit predict_disease.py
+
 NOTE: Use Python 3.5 to run
 """
 

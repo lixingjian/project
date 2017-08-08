@@ -50,7 +50,7 @@ def main():
             deptSynDict[tempList[m]] = tempList[0]
 
     for describe in DES_list:
-        # Extracting keywords takes place here
+        # Extracting keywords takes place in predict_disease.py
         original = describe.strip('\n')
         req = {'user': {'sex': 1, 'age': 30}, 'request': {'text': describe, 'type': 0}}
         req_list = [req]
@@ -63,13 +63,8 @@ def main():
         if len(predictedDept) == 0:
             predictedDept = 'Failed due to no input'
             failed += 1
-        """    
-        else:
-            predictedDept = response.split(' ')[0].rstrip()
-            if predictedDept in UNWANTED:
-                predictedDept = response.split(' ')[1].rstrip()
-        """
         
+        # Modify the result predicted as specified in synDipt.txt
         if predictedDept in deptSynDict:
             predictedDept = deptSynDict.get(predictedDept)
 
@@ -82,7 +77,8 @@ def main():
         else:
             report[i + 1] = [original, predictedDept, DEP_list[i]]
         i+=1
-    print (failed)
+    print (failed)    # Print the number of descriptions from which we failed to
+                      # extract keywords
     percentage = (float(count)/float(len(DEP_list) - failed)) * HUNDRED
     accuracy = "Estimated accuracy: " + str(percentage) + "%"
     correct = "\n\nCorrect results: \n"
