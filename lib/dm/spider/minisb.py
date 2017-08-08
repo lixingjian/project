@@ -33,12 +33,10 @@ def get_site(url):
 
 def check_key(db_name, key):
     while 1:    #其他进程可能在用db，所以要while try
-    #try:
-        if 1:    
+        try:
             db = leveldb.LevelDB(db_name)
             break
-        else:
-        #except:
+        except:
             print('fatal: db init failed', file = sys.stderr)
             time.sleep(random.randint(0, 10) * 0.01)
             continue
@@ -52,11 +50,10 @@ def check_key(db_name, key):
 
 def add_kv(db_name, key, val):
     while 1:
-        if 1:
+        try:
             db = leveldb.LevelDB(db_name)
             break
-        else:
-        #except:
+        except:
             print('fatal: db init failed', file = sys.stderr)
             time.sleep(random.randint(0, 10) * 0.01)
             continue
@@ -92,15 +89,19 @@ class MiniSpider:
         self.debug = debug
 
     def prepare(self):
+        os.system('mkdir -p %s' % self.result_dir)
+        os.system('touch %s.queue' % self.url_db_dir)
+        
         self.url_num = 0
-        self.file_id = 1
+        self.file_id = 1 + len(os.listdir(self.result_dir))
         self.file_len_cur = 0
         self.file_len_total = 0
         socket.setdefaulttimeout(self.time_out)
-        self.url_queue = [] 
+        
+        self.url_queue = str_util.read_lines('%s.queue' % self.url_db_dir)
         for url in self.entry_list:
             self.url_queue.append(url)
-        os.system('mkdir -p %s' % self.result_dir)
+        
         #todo: 判断目录是否存在
         #todo: 判断其他数值参数是否合理
         return True
@@ -187,6 +188,11 @@ class MiniSpider:
 
         lock.acquire()
         self.url_num += 1
+        if self.url_num % 10 == 0:
+            fp = open('%s.queue' % self.url_db_dir, 'w')
+            for url in self.url_queue:
+                fp.write('%s\n' % url)
+            fp.close()
         if self.url_num % 10000 == 0:
             self.file_id += 1
             self.file_len_cur = 0
