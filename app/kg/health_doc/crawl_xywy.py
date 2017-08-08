@@ -5,7 +5,7 @@ from minisb import MiniSpider
 
 retdir = '/data/health_doc/xywy'
 seeds = ['http://www.xywy.com', 
-		 'http://hxnk.xywy.com/fy/jc/20141023/955246.html',
+         'http://gcwk.xywy.com/zhic/yf/20140808/770521.html',
 		 'http://jib.xywy.com/il_sii_9900.htm?fromurl=xywyhomepage',
 		 'http://healthshare.xywy.com/healthdetail/486821.htm',
 		 'http://jib.xywy.com']
