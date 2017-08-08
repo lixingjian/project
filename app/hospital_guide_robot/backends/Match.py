@@ -42,9 +42,9 @@ class Match:
             for eachTuple in tuples:
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
             disease = currContent.get("name")
-            self.ac.add_word(disease, disease)
+            self.ac.add_word(disease, (len(self.ac),disease))
 
         for line in organData:
             curr = json.loads(line)
@@ -52,7 +52,7 @@ class Match:
             for eachTuple in organ.items():
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
     
     def match(self, description, synFileName, sympFileName):
         # Process the description, removing adverbs and punctuations
@@ -70,9 +70,9 @@ class Match:
         self.ac.make_automaton()
         result = []
         for end_index, symptom in self.ac.iter(description):
-            symptom = symptom + ' '
-            if not symptom in result:
-                result.append(symptom)
+            sym = symptom[1] + ' '
+            if not sym in result:
+                result.append(sym)
         # Return a string format 
         return ''.join(str(x) for x in result)
 

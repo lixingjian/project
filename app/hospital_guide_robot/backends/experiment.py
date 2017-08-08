@@ -40,10 +40,6 @@ def main():
     report = {}
     matched = {}
 
-    # Process the natural language and extract keywords
-    matcher = Match()
-    matcher.load("disease_symptom.json", "disease_organ.json")
-
     # Modify the output of the model for better classification of departments
     deptSynFile = open('synDept.txt', 'r')
     deptSynDict = {}
@@ -56,18 +52,24 @@ def main():
     for describe in DES_list:
         # Extracting keywords takes place here
         original = describe.strip('\n')
-        describe = matcher.match(describe, 'syn1.txt', 'disease_symptom.json').rstrip()
-        req = {'user': {'sex': 1, 'age': 30}, 'cont': {'req_text': describe, 'req_type': 0, 'res_text': ''}}
+        req = {'user': {'sex': 1, 'age': 30}, 'request': {'text': describe, 'type': 0}}
         req_list = [req]
-        response = d.run(json.dumps(req_list, ensure_ascii = False))
-        if len(response) == 0:
+        for part in describe.split(' '):
+            if part.startswith('age='):
+                req['user']['age'] = int(part[len('age='):])
+            if part.startswith('sex='):
+                req['user']['sex'] = int(part[len('sex='):])
+        predictedDept = d.run(req_list).get("text")
+        if len(predictedDept) == 0:
             predictedDept = 'Failed due to no input'
             failed += 1
+        """    
         else:
             predictedDept = response.split(' ')[0].rstrip()
             if predictedDept in UNWANTED:
                 predictedDept = response.split(' ')[1].rstrip()
-
+        """
+        
         if predictedDept in deptSynDict:
             predictedDept = deptSynDict.get(predictedDept)
 
@@ -76,9 +78,9 @@ def main():
 
         if predictedDept == DEP_list[i]:
             count += 1
-            matched[i + 1] = [original, describe, predictedDept, DEP_list[i]]
+            matched[i + 1] = [original, predictedDept, DEP_list[i]]
         else:
-            report[i + 1] = [original, describe, predictedDept, DEP_list[i]]
+            report[i + 1] = [original, predictedDept, DEP_list[i]]
         i+=1
     print (failed)
     percentage = (float(count)/float(len(DEP_list) - failed)) * HUNDRED
