@@ -7,15 +7,7 @@ Author: Haozhe
 This file extacts the keywords from a patient's description and prints
 out the corresponding expressions stored in our dictionary
 
-Update(Aug 2, 2017) Incorporated synonyms while extracting keywords
-1. match() now must have 3 parameters
-2. Include a txt file of synonyms while runniing the program
-
-Update(Aug 3, 2017) Made some improvements
-1. Fixed a bug in wordInSym()
-2. Now the program can extract disease names from description
-
-Update(Aug 4, 2017) Include the function to extract organ keywords
+Update(Aug 9, 2017) Improvement made to reduce duplicated chars
 
 NOTE: Use Python 3.5 to run
 """
@@ -42,9 +34,9 @@ class Match:
             for eachTuple in tuples:
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
             disease = currContent.get("name")
-            self.ac.add_word(disease, disease)
+            self.ac.add_word(disease, (len(self.ac),disease))
 
         for line in organData:
             curr = json.loads(line)
@@ -52,7 +44,7 @@ class Match:
             for eachTuple in organ.items():
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
     
     def match(self, description, synFileName, sympFileName):
         # Process the description, removing adverbs and punctuations
@@ -70,11 +62,21 @@ class Match:
         self.ac.make_automaton()
         result = []
         for end_index, symptom in self.ac.iter(description):
-            symptom = symptom + ' '
-            if not symptom in result:
-                result.append(symptom)
+            sym = symptom[1]
+            if not sym in result:
+                result.append(sym)
+        # 删除有包含关系的词语
+        for ele in result:
+            for other in result:
+                if ele == other:
+                    continue
+                if ele.find(other) >= 0:
+                    result.remove(other)
+                else: 
+                    continue
+
         # Return a string format 
-        return ''.join(str(x) for x in result)
+        return ''.join((str(x) + ' ') for x in result)
 
     # Helper method which is used in createSynDict()
     def wordInSymp(self, wordString, sympList):

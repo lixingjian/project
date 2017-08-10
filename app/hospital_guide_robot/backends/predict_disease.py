@@ -8,6 +8,10 @@ from pgmpy.inference import VariableElimination
 import json
 from pgmpy.readwrite import BIFReader, BIFWriter, XMLBIFReader, XMLBIFWriter, ProbModelXML, UAIReader, UAIWriter
 import ahocorasick
+from Match import Match
+
+
+UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外']
 
 def age_id(n):
     age_parts = [1, 10, 20, 40, 60]
@@ -18,18 +22,26 @@ def age_id(n):
 
 class Diagnosis:
     def __init__(self):
-        self.disease_part = {}
-        self.disease_rate = {}
+        self.disease_part = {}     # Key is id, value is department
+        self.disease_rate = {}     # key is id, value is rate
         for line in open('disease_intro.json').readlines():
             js = json.loads(line.rstrip())['struct'] 
             self.disease_rate[js['id']] = js['rate']
             self.disease_part[js['id']] = js['department']
 
+        # fea_map is a dict; key is 'D_' + diseaeName or 'S_' + symptom
+        # or 'O_' + organ and value is its index
         self.fea_map = str_util.read_kv_file('models/feature.id')
-        self.disease_id = {}
-        self.disease_name = {}
-        self.ds_rind = {}
-        self.symptom_dict = ahocorasick.Automaton()
+        self.disease_id = {}       # Key is disease name, value is id
+        self.disease_name = {}     # Key is id, value is disease name
+        self.ds_rind = {}          # Key is symptom, value is a dict whose key is id, value is rate
+        self.ds_organ = {}         # Key is organ, value is a dict whose key is id, value is rate
+
+        # Imported from Match.py to extract keywords from patient's description
+        self.matcher = Match()
+        self.matcher.load("disease_symptom.json", "disease_organ.json")
+        
+        # Construct disease_name, disease_id and ds_rind
         for line in open('disease_symptom.json').readlines():
             js = json.loads(line.rstrip())
             id = js['id']
@@ -38,24 +50,43 @@ class Diagnosis:
             self.disease_name[id] = js['name']
             self.disease_id[js['name']] = id
             for s, w in js['symptoms'].items():
-                if not s in self.symptom_dict:
-                    self.symptom_dict.add_word(s, (len(self.symptom_dict), s))
                 if not s in self.ds_rind:
                     self.ds_rind[s] = {} 
                 self.ds_rind[s][id] = self.disease_rate[id]
-            self.symptom_dict.make_automaton()
+
+        # Construct ds_organ
+        for line in open('disease_organ.json').readlines():
+            js = json.loads(line.rstrip())
+            id = js['id']
+            if not id in self.disease_rate:
+                continue
+            for o, w in js['organ'].items():
+                if not o in self.ds_organ:
+                    self.ds_organ[o]={}
+                self.ds_organ[o][id] = self.disease_rate[id]
+
         print('init succeed ... type symptoms ...', file = sys.stderr)
 
     def extract_self_explain(self, req):
         fea_list = []
-        #todo: 利用ac和同义词表，解析出更多表述的症状特征
-        for word in self.symptom_dict.iter(req['request']['text']):
-            sym = 'S_' + word[1][1]
-            if sym in self.fea_map:
-                fea_list.append((sym, 0))
+        # 利用ac和同义词表，解析出更多表述的症状特征
+        description = self.matcher.match(req['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
 
-        #todo: 抽取部位特征
+        for word in description.split(' '):
+            if word in self.ds_rind or word in self.disease_id:  # word is a symptom or the disease itself
+                word = 'S_' + word
+            elif word in self.ds_organ: # word is an organ
+                word = 'O_' + word
+            else:
+                continue
 
+            if word in self.fea_map:
+                fea_list.append((word, 0))  # Use 0 to initialize a value for easier calculation later
+
+        print (fea_list)
+
+        # Example of a returned fea_list
+        # [(S_腹泻, 0), (O_腹, 0)]
         return fea_list
 
     def extract_interactive(self, req_list):
@@ -68,13 +99,22 @@ class Diagnosis:
                     fea_list.append((sym, 0))
         return fea_list
 
+
+    """
+    req_list is shown below
+    req = {'user': {'sex': 1, 'age': 30}, 'request': {'text': buf, 'type': 0}}
+    req_list = [req]
+    """
+
     def get_observed_info(self, req_list):
-        observed_info = {}
+        observed_info = {}   # Key is the same format as the key in fea_map, eg. S_腹泻
+                             # Value is 0
         for fea, val in self.extract_self_explain(req_list[-1]):
             observed_info[fea] = val
         for fea, val in self.extract_interactive(req_list):
             observed_info[fea] = val
-    
+        
+        # Other two keys in observed_info 
         observed_info['SEX'] = req_list[-1]['user']['sex']
         observed_info['AGE'] = age_id(req_list[-1]['user']['age'])
 
@@ -83,28 +123,43 @@ class Diagnosis:
     def fea_to_id(self, observed_info):
         ret = {}
         for fea, val in observed_info.items():
+            # Key gets the same key in observed_info first
             key = fea
             if fea in self.fea_map:
+                # Change key to its index as specified in the file models/feature.id
                 key = self.fea_map[fea]
             ret[key] = val
-        return ret    
+
+        return ret
 
     def get_candidate_list(self, observed_info):
         candidates = {} 
+
+        # Construct candidates dict; key is id, value is rate
         for fea, val in observed_info.items():
-            if not fea.startswith('S_'):
-                continue
-            sym = fea[len('S_'):]
-            if sym in self.disease_id:          #症状本身就是疾病名的情况
-                kid = self.disease_id[sym]
-                if not kid in candidates:
-                    candidates[kid] = 0
-                candidates[kid] += 1
-            if sym in self.ds_rind:             
-                for kid, rate in self.ds_rind[sym].items():
+            if fea.startswith('S_'):
+                sym = fea[len('S_'):]
+                if sym in self.ds_rind:
+                    for kid, rate in self.ds_rind[sym].items():
+                        if not kid in candidates:
+                            candidates[kid] = 0
+                        candidates[kid] += rate
+                elif sym in self.disease_id:
+                    kid = self.disease_id.get(sym)
                     if not kid in candidates:
                         candidates[kid] = 0
-                    candidates[kid] += rate    
+                    candidates[kid] += 1
+            elif fea.startswith('O_'):
+                organ = fea[len('O_'):]
+                if organ in self.ds_organ:
+                    for kid, rate in self.ds_organ[organ].items():
+                        if not kid in candidates:
+                            candidates[kid] = 0
+                        candidates[kid] += rate
+            else:
+                continue
+
+        # Get the top 20 possible diseases
         ids = sorted(candidates.items(), key=lambda d:d[1], reverse=True)[:20]
         print('%d candidates generated' % len(ids), file = sys.stderr)
         return ids
@@ -115,6 +170,8 @@ class Diagnosis:
         if len(dep_list) == 1:
             return dep_list[0]
         if dep_list[1][0].find(dep_list[0][0]) >= 0:
+            return dep_list[1]
+        if dep_list[0][0] in UNWANTED:
             return dep_list[1]
         return dep_list[0]
 
@@ -172,7 +229,7 @@ class Diagnosis:
         dep, wei = self.department_select(dep_list)
         response['type'] = 0
         response['wei'] = 1000 * wei
-        response['text'] = '建议就诊科室：' + dep
+        response['text'] = dep
         return response
 
 if __name__ == '__main__':
