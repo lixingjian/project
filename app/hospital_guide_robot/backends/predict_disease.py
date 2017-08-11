@@ -81,9 +81,7 @@ class Diagnosis:
                 continue
 
             if word in self.fea_map:
-                fea_list.append((word, 0))  # Use 0 to initialize a value for easier calculation later
-
-        print (fea_list)
+                fea_list.append((word, 0))
 
         # Example of a returned fea_list
         # [(S_腹泻, 0), (O_腹, 0)]
@@ -175,6 +173,29 @@ class Diagnosis:
             return dep_list[1]
         return dep_list[0]
 
+    def create_common_dict(self, commonSymFile):
+        common_dict = {}     # Key is a list of symptoms, value is dept
+        for line in open(commonSymFile).readlines():
+            content = line.split(' ')
+            common_dict[content[0]] = content[1]
+        return common_dict
+            
+
+    def find_obvious_sym (self, req_list, commonSymFile):
+        common_dict = create_common_dict(commonSymFile)
+        description = self.matcher.match(req_list[-1]['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
+        for sym, dept in common_dict:
+            found = True
+            for ele in sym.split(','):
+                if description.find(ele) < 0:
+                    found = False
+                    break
+            if not found:
+                continue
+            else:
+                return dept
+        return ''
+
     def run(self, req_list):
         response = {'wei': 0, 'text': '', 'type': 0}
 
@@ -182,6 +203,19 @@ class Diagnosis:
             return response
         observed_info_ori = self.get_observed_info(req_list)
         print(observed_info_ori, file = sys.stderr)
+
+        response = {}
+        response['type'] = 0
+        response['wei'] = 1   # This may need modification
+
+        # 模型第一层 - 简单症状的直接映射
+        first_prediction = self.find_obvious_sym(req_list, 'common.txt')
+        if len(fist_prediction) != 0:
+            # Prediction success
+            response['text'] = first_prediction
+            return response
+
+        # 模型第二层 - 贝叶斯网络的应用
         candidates = self.get_candidate_list(observed_info_ori)
 
         observed_info = self.fea_to_id(observed_info_ori)
@@ -225,9 +259,7 @@ class Diagnosis:
         dep_list = sorted(deps.items(), key=lambda d:d[1], reverse=True)
         print('department: %s' % dep_list[:5], file = sys.stderr)
 
-        response = {}
         dep, wei = self.department_select(dep_list)
-        response['type'] = 0
         response['wei'] = 1000 * wei
         response['text'] = dep
         return response
