@@ -39,7 +39,7 @@ class Diagnosis:
 
         # Imported from Match.py to extract keywords from patient's description
         self.matcher = Match()
-        self.matcher.load("disease_symptom.json", "disease_organ.json")
+        self.matcher.load("disease_symptom.json", "disease_organ.json", "common.txt")
         
         # Construct disease_name, disease_id and ds_rind
         for line in open('disease_symptom.json').readlines():
@@ -182,20 +182,20 @@ class Diagnosis:
         common_dict = {}     # Key is a list of symptoms, value is dept
         for line in open(commonSymFile).readlines():
             content = line.split(' ')
-            common_dict[content[0]] = content[1]
+            common_dict[content[0]] = content[1].rstrip()
         return common_dict
             
 
     def find_obvious_sym (self, req_list, commonSymFile):
-        common_dict = create_common_dict(commonSymFile)
+        common_dict = self.create_common_dict(commonSymFile)
         description = self.matcher.match(req_list[-1]['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
-        for sym, dept in common_dict:
+        for sym, dept in common_dict.items():
             found = True
             for ele in sym.split(','):
                 if description.find(ele) < 0:
                     found = False
                     break
-            if not found:
+            if found == False:
                 continue
             else:
                 return dept
@@ -215,7 +215,7 @@ class Diagnosis:
 
         # 模型第一层 - 简单症状的直接映射
         first_prediction = self.find_obvious_sym(req_list, 'common.txt')
-        if len(fist_prediction) != 0:
+        if len(first_prediction) != 0:
             # Prediction success
             response['text'] = first_prediction
             return response

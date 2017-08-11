@@ -21,12 +21,13 @@ class Match:
         self.ac = ahocorasick.Automaton()
         self.synAc = ahocorasick.Automaton()
 
-    def load(self, fileName, organFile):
+    def load(self, fileName, organFile, commonFile):
         # Take in disease symptoms, names and related organs 
         result = []
         # Read the file in utf-8 to display Chinese characters
         inputData = codecs.open (fileName, 'r', 'utf-8')
         organData = codecs.open(organFile, 'r', 'utf-8')
+        commonData = codecs.open(commonFile, 'r', 'utf-8')
         for line in inputData:
             currContent = json.loads(line)
             sym = currContent.get("symptoms")
@@ -45,6 +46,11 @@ class Match:
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
                     self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
+
+        for line in commonData:
+            sym_list = line.split(' ')[0].split(',')
+            for ele in sym_list:
+                self.ac.add_word(ele, (len(self.ac),ele))
     
     def match(self, description, synFileName, sympFileName):
         # Process the description, removing adverbs and punctuations
@@ -69,18 +75,13 @@ class Match:
         for each in result:
             copy.append(each)
 
-        print(result)
         # 删除有包含关系的词语
         for ele in result:
             for other in result:
-                print(ele)
-                print(other)
                 if ele == other:
-                    print('in continue')
                     continue
                 if ele.find(other) >= 0 and other in copy:
                     copy.remove(other)
-                    print(str(other) + ' is removed')
                 else: 
                     continue
 
