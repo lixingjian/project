@@ -3,13 +3,15 @@ from pgmpy.models import BayesianModel
 from pgmpy.factors.discrete import TabularCPD
 from pgmpy.inference import VariableElimination
 import os, sys, json
+import math
 from pgmpy.readwrite import BIFReader, BIFWriter, XMLBIFReader, XMLBIFWriter, ProbModelXML, UAIReader, UAIWriter
 
 def format_2d_prob(p0, arr1, arr2):
     ret = []
     for j in range(len(arr2)):
         for i in range(len(arr1)):
-            ret.append(p0 * arr1[i] * arr2[j])
+           # ret.append(p0 * arr1[i] * arr2[j])
+           ret.append((1/(1+math.exp(-(p0))))*arr1[i]*arr2[j])
     return ret
 
 def sub_vec(vec, num):
@@ -40,7 +42,7 @@ for line in open('disease_organ.json').readlines():
 os.system('mkdir -p models')
 d_map = {}
 s_map = {}
-o_map = {}
+#o_map = {}
 for name, dinfo in dinfos.items():
     disease_name = 'D_' + name    
 
@@ -66,14 +68,14 @@ for name, dinfo in dinfos.items():
     dep_nodes.append((disease_id, dis_sym_id))
         
 
-    if not 'organs' in dinfo:
-        continue
-    for organ, prob in dinfo['organs'].items():
-        organ_name = 'O_' + organ
-        if not organ_name in o_map:
-            o_map[organ_name] = 'O%d' % len(o_map)
-        organ_id=o_map[organ_name]
-        dep_nodes.append((disease_id,organ_id))
+#    if not 'organs' in dinfo:
+#       continue
+#   for organ, prob in dinfo['organs'].items():
+#       organ_name = 'O_' + organ
+#      if not organ_name in o_map:
+#           o_map[organ_name] = 'O%d' % len(o_map)
+#      organ_id=o_map[organ_name]
+#      dep_nodes.append((disease_id,organ_id))
 
     model = BayesianModel(dep_nodes)
     
@@ -95,13 +97,13 @@ for name, dinfo in dinfos.items():
     cpd = TabularCPD(variable = disease_id, variable_card = 2, values = [piror_prob, sub_vec(piror_prob, 1)], evidence = ['SEX', 'AGE'], evidence_card = [len(sex_prob), len(age_prob)]) 
     model.add_cpds(cpd)
     for symptom, prob in dinfo['symptoms'].items():
-        cpd = TabularCPD(variable = s_map['S_' + symptom], variable_card = 2, values = [[prob,0.2], [1-prob,0.8]], evidence = [disease_id], evidence_card = [2])
+        cpd = TabularCPD(variable = s_map['S_' + symptom], variable_card = 2, values = [[prob,0.05], [1-prob,0.95]], evidence = [disease_id], evidence_card = [2])
         model.add_cpds(cpd)
     
 
-    for organ,prob in dinfo['organs'].items():
-        cpd = TabularCPD(variable = o_map['O_' + organ], variable_card = 2,values = [[prob,0.1],[1-prob,0.9]],evidence = [disease_id],evidence_card = [2])
-        model.add_cpds(cpd)
+#    for organ,prob in dinfo['organs'].items():
+#        cpd = TabularCPD(variable = o_map['O_' + organ], variable_card = 2,values = [[prob,0.05],[1-prob,0.95]],evidence = [disease_id],evidence_card = [2])
+#       model.add_cpds(cpd)
     model.check_model()
     save_model(model, 'models/model.bif.%s' % dinfo['id'])
     print('%s model saved' % name)
@@ -111,6 +113,6 @@ for name, fid in d_map.items():
     fp_fea.write(name + '\t' + fid + '\n')
 for name, fid in s_map.items():
     fp_fea.write(name + '\t' + fid + '\n')
-for name, fid in o_map.items():
-    fp_fea.write(name + '\t' + fid + '\n')
+#for name, fid in o_map.items():
+#   fp_fea.write(name + '\t' + fid + '\n')
 fp_fea.close()    
