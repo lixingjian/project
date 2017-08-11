@@ -11,7 +11,7 @@ import ahocorasick
 from Match import Match
 
 
-UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外']
+UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外','急诊科']
 
 def age_id(n):
     age_parts = [1, 10, 20, 40, 60]
@@ -35,7 +35,7 @@ class Diagnosis:
         self.disease_id = {}       # Key is disease name, value is id
         self.disease_name = {}     # Key is id, value is disease name
         self.ds_rind = {}          # Key is symptom, value is a dict whose key is id, value is rate
-        self.ds_organ = {}         # Key is organ, value is a dict whose key is id, value is rate
+#       self.ds_organ = {}         # Key is organ, value is a dict whose key is id, value is rate
 
         # Imported from Match.py to extract keywords from patient's description
         self.matcher = Match()
@@ -53,7 +53,8 @@ class Diagnosis:
                 if not s in self.ds_rind:
                     self.ds_rind[s] = {} 
                 self.ds_rind[s][id] = self.disease_rate[id]
-
+        print('init succeed ... type symptoms ...', file = sys.stderr)
+        """
         # Construct ds_organ
         for line in open('disease_organ.json').readlines():
             js = json.loads(line.rstrip())
@@ -63,9 +64,7 @@ class Diagnosis:
             for o, w in js['organ'].items():
                 if not o in self.ds_organ:
                     self.ds_organ[o]={}
-                self.ds_organ[o][id] = self.disease_rate[id]
-
-        print('init succeed ... type symptoms ...', file = sys.stderr)
+                self.ds_organ[o][id] = self.disease_rate[id] """
 
     def extract_self_explain(self, req):
         fea_list = []
@@ -75,15 +74,13 @@ class Diagnosis:
         for word in description.split(' '):
             if word in self.ds_rind or word in self.disease_id:  # word is a symptom or the disease itself
                 word = 'S_' + word
-            elif word in self.ds_organ: # word is an organ
-                word = 'O_' + word
+#           elif word in self.ds_organ: # word is an organ
+#               word = 'O_' + word
             else:
                 continue
 
             if word in self.fea_map:
                 fea_list.append((word, 0))  # Use 0 to initialize a value for easier calculation later
-
-        print (fea_list)
 
         # Example of a returned fea_list
         # [(S_腹泻, 0), (O_腹, 0)]
@@ -149,6 +146,7 @@ class Diagnosis:
                     if not kid in candidates:
                         candidates[kid] = 0
                     candidates[kid] += 1
+            """
             elif fea.startswith('O_'):
                 organ = fea[len('O_'):]
                 if organ in self.ds_organ:
@@ -156,9 +154,10 @@ class Diagnosis:
                         if not kid in candidates:
                             candidates[kid] = 0
                         candidates[kid] += rate
+            
             else:
                 continue
-
+            """
         # Get the top 20 possible diseases
         ids = sorted(candidates.items(), key=lambda d:d[1], reverse=True)[:20]
         print('%d candidates generated' % len(ids), file = sys.stderr)
@@ -172,6 +171,10 @@ class Diagnosis:
         if dep_list[1][0].find(dep_list[0][0]) >= 0:
             return dep_list[1]
         if dep_list[0][0] in UNWANTED:
+            if dep_list[1][0] in UNWANTED:
+                if dep_list[2][0]==None:
+                    return dep_list[1]
+                return dep_list[2]
             return dep_list[1]
         return dep_list[0]
 
@@ -230,6 +233,13 @@ class Diagnosis:
         response['type'] = 0
         response['wei'] = 1000 * wei
         response['text'] = dep
+
+        returnedCan = {}
+        for did, rate in candidates:
+            key = self.disease_name.get(did)
+            returnedCan[key] = rate
+        orderedCan = sorted(returnedCan.items(), key=lambda d:d[1], reverse = True)
+        response['candidates'] = orderedCan
         return response
 
 if __name__ == '__main__':
