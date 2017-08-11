@@ -39,7 +39,7 @@ class Diagnosis:
 
         # Imported from Match.py to extract keywords from patient's description
         self.matcher = Match()
-        self.matcher.load("disease_symptom.json", "disease_organ.json", "common.txt")
+        self.matcher.load("disease_symptom.json", "disease_organ.json", "common.txt", "feeling.txt")
         
         # Construct disease_name, disease_id and ds_rind
         for line in open('disease_symptom.json').readlines():
@@ -66,14 +66,27 @@ class Diagnosis:
                     self.ds_organ[o]={}
                 self.ds_organ[o][id] = self.disease_rate[id] """
 
+            for eachPart in description.split('，'):
+                temp = matcher.match(eachPart,'syn1.txt','disease_symptom.json')
+                print('temp is ' + temp)
+                res = matcher.combine(temp, 'organ.txt', 'feeling.txt')
+                print('res is ' + res)
+                result = result + res
+            print(result)
+
     def extract_self_explain(self, req):
         fea_list = []
         # 利用ac和同义词表，解析出更多表述的症状特征
-        description = self.matcher.match(req['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
+        text = req['request']['text']
+        for eachPart in text.split('，'):
+            temp = self.matcher.match(req['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
+            description = self.matcher.combine(temp, 'organ.txt', 'feeling.txt')
 
         for word in description.split(' '):
             if word in self.ds_rind or word in self.disease_id:  # word is a symptom or the disease itself
                 word = 'S_' + word
+            elif ('#' + word) in self.ds_rind:
+                word = 'S_#' + word
 #           elif word in self.ds_organ: # word is an organ
 #               word = 'O_' + word
             else:
