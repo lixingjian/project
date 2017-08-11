@@ -65,18 +65,27 @@ class Match:
             sym = symptom[1]
             if not sym in result:
                 result.append(sym)
+        copy = []
+        for each in result:
+            copy.append(each)
+
+        print(result)
         # 删除有包含关系的词语
         for ele in result:
             for other in result:
+                print(ele)
+                print(other)
                 if ele == other:
+                    print('in continue')
                     continue
-                if ele.find(other) >= 0:
-                    result.remove(other)
+                if ele.find(other) >= 0 and other in copy:
+                    copy.remove(other)
+                    print(str(other) + ' is removed')
                 else: 
                     continue
 
         # Return a string format 
-        return ''.join((str(x) + ' ') for x in result)
+        return ''.join((str(x) + ' ') for x in copy)
 
     # Helper method which is used in createSynDict()
     def wordInSymp(self, wordString, sympList):
