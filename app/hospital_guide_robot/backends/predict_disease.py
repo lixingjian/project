@@ -9,6 +9,7 @@ import json
 from pgmpy.readwrite import BIFReader, BIFWriter, XMLBIFReader, XMLBIFWriter, ProbModelXML, UAIReader, UAIWriter
 import ahocorasick
 from Match import Match
+import math
 
 
 UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外','急诊科']
@@ -35,14 +36,14 @@ class Diagnosis:
         self.disease_id = {}       # Key is disease name, value is id
         self.disease_name = {}     # Key is id, value is disease name
         self.ds_rind = {}          # Key is symptom, value is a dict whose key is id, value is rate
-#       self.ds_organ = {}         # Key is organ, value is a dict whose key is id, value is rate
+        self.ds_organ = {}         # Key is organ, value is a dict whose key is id, value is rate
 
         # Imported from Match.py to extract keywords from patient's description
         self.matcher = Match()
         self.matcher.load("disease_symptom.json", "disease_organ.json", "common.txt", "feeling.txt")
         
         # Construct disease_name, disease_id and ds_rind
-        for line in open('disease_symptom.json').readlines():
+        for line in open('disease_symptom_modified.json').readlines():
             js = json.loads(line.rstrip())
             id = js['id']
             if not id in self.disease_rate:
@@ -54,7 +55,7 @@ class Diagnosis:
                     self.ds_rind[s] = {} 
                 self.ds_rind[s][id] = self.disease_rate[id]
         print('init succeed ... type symptoms ...', file = sys.stderr)
-        """
+        
         # Construct ds_organ
         for line in open('disease_organ.json').readlines():
             js = json.loads(line.rstrip())
@@ -64,31 +65,29 @@ class Diagnosis:
             for o, w in js['organ'].items():
                 if not o in self.ds_organ:
                     self.ds_organ[o]={}
-                self.ds_organ[o][id] = self.disease_rate[id] """
-
-            for eachPart in description.split('，'):
-                temp = matcher.match(eachPart,'syn1.txt','disease_symptom.json')
-                print('temp is ' + temp)
-                res = matcher.combine(temp, 'organ.txt', 'feeling.txt')
-                print('res is ' + res)
-                result = result + res
-            print(result)
+                self.ds_organ[o][id] = self.disease_rate[id] 
+        
 
     def extract_self_explain(self, req):
         fea_list = []
         # 利用ac和同义词表，解析出更多表述的症状特征
         text = req['request']['text']
+        text.replace(' ', '，')
         for eachPart in text.split('，'):
+            if len(eachPart) == 0:
+                continue
             temp = self.matcher.match(req['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
             description = self.matcher.combine(temp, 'organ.txt', 'feeling.txt')
 
         for word in description.split(' '):
+            if len(word) == 0:
+                continue
             if word in self.ds_rind or word in self.disease_id:  # word is a symptom or the disease itself
                 word = 'S_' + word
             elif ('#' + word) in self.ds_rind:
                 word = 'S_#' + word
-#           elif word in self.ds_organ: # word is an organ
-#               word = 'O_' + word
+            elif word in self.ds_organ: # word is an organ
+                word = 'O_' + word
             else:
                 continue
 
@@ -159,7 +158,7 @@ class Diagnosis:
                     if not kid in candidates:
                         candidates[kid] = 0
                     candidates[kid] += 1
-            """
+            
             elif fea.startswith('O_'):
                 organ = fea[len('O_'):]
                 if organ in self.ds_organ:
@@ -170,7 +169,7 @@ class Diagnosis:
             
             else:
                 continue
-            """
+            
         # Get the top 20 possible diseases
         ids = sorted(candidates.items(), key=lambda d:d[1], reverse=True)[:20]
         print('%d candidates generated' % len(ids), file = sys.stderr)
@@ -246,7 +245,6 @@ class Diagnosis:
                     if not d in deps:
                         deps[d] = 0
                     deps[d] += 1
-
             try:
                 model = BIFReader('models/model.bif.%s' % i).get_model()
             except:
@@ -259,6 +257,8 @@ class Diagnosis:
                 if k in model.nodes():
                     observed_info_valid[k] = v
             score = infer.query(variables = [key], evidence = observed_info_valid)[key].values[0]
+            if math.isnan(score):
+                score = 1
             dw[self.disease_name[i]] = score
             #print('%s: %s = %.8f' % (i, self.disease_name[i], score))    
 

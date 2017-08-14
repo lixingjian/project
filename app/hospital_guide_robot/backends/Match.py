@@ -62,8 +62,8 @@ class Match:
         adv = json.load(advFile)
         for eachAdv in adv:
             description = description.replace(eachAdv, "")
-        for punc in ["，","。","？","！", "、"," "]:
-            description = description.replace(punc, "")
+#        for punc in ["，","。","？","！", "、"," "]:
+#            description = description.replace(punc, "")
 
         synDict = self.createSynDict(synFileName,sympFileName)
         description = self.replaceSyn(description, synDict)
@@ -101,7 +101,7 @@ class Match:
         
         temp = []
         word = string.split()
-        for i in range(len(word)):
+        for i in range(len(word)-1):
             if word[i] in organList and word[i+1] in feelingList:
                 temp.append(word[i] + word[i+1])
             

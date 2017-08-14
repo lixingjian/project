@@ -11,7 +11,7 @@ import json
 
 INDEX_OF_DEPT = 0
 HUNDRED = 100
-UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外']
+UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','疼痛科','急诊科']
 
 def main():
     symFile = open ('symptom_input.txt', 'r')
@@ -31,6 +31,8 @@ def main():
         DEP_list.append(read_list[j].strip('\n').rstrip())
     print ("DEP LEN: " + str(len(DEP_list)))
 
+    matcher = Match()
+    matcher.load("disease_symptom.json", "disease_organ.json", 'common.txt', 'feeling.txt')
 
     count = 0
     i = 0
@@ -53,14 +55,18 @@ def main():
         # Extracting keywords takes place in predict_disease.py
         original = describe.strip('\n')
         req = {'user': {'sex': 1, 'age': 30}, 'request': {'text': describe, 'type': 0}}
+        description = matcher.match(req['request']['text'], 'syn1.txt', 'disease_symptom.json').rstrip()
+
         req_list = [req]
         for part in describe.split(' '):
             if part.startswith('age='):
                 req['user']['age'] = int(part[len('age='):])
             if part.startswith('sex='):
                 req['user']['sex'] = int(part[len('sex='):])
-        predictedDept = d.run(req_list).get("text")
-        if len(predictedDept) == 0:
+        prediction = d.run(req_list)
+        predictedDept = prediction.get('text')
+        candidates = prediction.get('candidates')
+        if predictedDept == None or len(predictedDept) == 0:
             predictedDept = 'Failed due to no input'
             failed += 1
         
@@ -73,19 +79,24 @@ def main():
 
         if predictedDept == DEP_list[i]:
             count += 1
-            matched[i + 1] = [original, predictedDept, DEP_list[i]]
+            matched[i + 1] = [original, description, candidates, predictedDept, DEP_list[i]]
         else:
-            report[i + 1] = [original, predictedDept, DEP_list[i]]
+            report[i + 1] = [original, description, candidates, predictedDept, DEP_list[i]]
         i+=1
+        print(i)
+
+    print('number of descriptions failed to find keywords')
     print (failed)    # Print the number of descriptions from which we failed to
                       # extract keywords
     percentage = (float(count)/float(len(DEP_list) - failed)) * HUNDRED
-    accuracy = "Estimated accuracy: " + str(percentage) + "%"
+    overallPerc = float(count)/float(len(DEP_list)) * HUNDRED
+    accuracy = "Estimated model accuracy: " + str(percentage) + "%"
+    overallAccu = "Overall accuracy: " + str(overallPerc) + "%"
     correct = "\n\nCorrect results: \n"
     incorrect = "\n\nIncorrect results: \n"
     
     outputFile = open ('test_result.txt', 'w')
-    outputFile.write(accuracy + '\n' + correct)
+    outputFile.write(accuracy + '\n' + overallAccu + '\n' + correct)
     outputFile.write("".join('{}{}\n'.format(key, val) for key, val in sorted(matched.items())))
     outputFile.write(incorrect)
     outputFile.write("".join('{}{}\n'.format(key, val) for key, val in report.items()))
