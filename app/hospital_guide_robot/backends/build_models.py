@@ -29,20 +29,20 @@ for line in open('disease_intro.json').readlines():
     j1 = json.loads(line.rstrip())['struct']
     dinfos[j1['name']] = j1
 
-for line in open('disease_symptom.json').readlines():
+for line in open('disease_symptom_modified.json').readlines():
     j2 = json.loads(line.rstrip())
     if j2['name'] in dinfos:
         dinfos[j2['name']]['symptoms'] = j2['symptoms']
+        
 for line in open('disease_organ.json').readlines():
     j3=json.loads(line.rstrip())
     if j3['name'] in dinfos:
         dinfos[j3['name']]['organs']=j3['organ']
 
-
 os.system('mkdir -p models')
 d_map = {}
 s_map = {}
-#o_map = {}
+o_map = {}
 for name, dinfo in dinfos.items():
     disease_name = 'D_' + name    
 
@@ -68,14 +68,14 @@ for name, dinfo in dinfos.items():
     dep_nodes.append((disease_id, dis_sym_id))
         
 
-#    if not 'organs' in dinfo:
-#       continue
-#   for organ, prob in dinfo['organs'].items():
-#       organ_name = 'O_' + organ
-#      if not organ_name in o_map:
-#           o_map[organ_name] = 'O%d' % len(o_map)
-#      organ_id=o_map[organ_name]
-#      dep_nodes.append((disease_id,organ_id))
+    if not 'organs' in dinfo:
+       continue
+    for organ, prob in dinfo['organs'].items():
+        organ_name = 'O_' + organ
+        if not organ_name in o_map:
+           o_map[organ_name] = 'O%d' % len(o_map)
+        organ_id=o_map[organ_name]
+        dep_nodes.append((disease_id,organ_id))
 
     model = BayesianModel(dep_nodes)
     
@@ -101,9 +101,10 @@ for name, dinfo in dinfos.items():
         model.add_cpds(cpd)
     
 
-#    for organ,prob in dinfo['organs'].items():
-#        cpd = TabularCPD(variable = o_map['O_' + organ], variable_card = 2,values = [[prob,0.05],[1-prob,0.95]],evidence = [disease_id],evidence_card = [2])
-#       model.add_cpds(cpd)
+    for organ,prob in dinfo['organs'].items():
+        cpd = TabularCPD(variable = o_map['O_' + organ], variable_card = 2,values = [[prob,0.05],[1-prob,0.95]],evidence = [disease_id],evidence_card = [2])
+        model.add_cpds(cpd)
+
     model.check_model()
     save_model(model, 'models/model.bif.%s' % dinfo['id'])
     print('%s model saved' % name)
@@ -113,6 +114,6 @@ for name, fid in d_map.items():
     fp_fea.write(name + '\t' + fid + '\n')
 for name, fid in s_map.items():
     fp_fea.write(name + '\t' + fid + '\n')
-#for name, fid in o_map.items():
-#   fp_fea.write(name + '\t' + fid + '\n')
+for name, fid in o_map.items():
+       fp_fea.write(name + '\t' + fid + '\n')
 fp_fea.close()    
