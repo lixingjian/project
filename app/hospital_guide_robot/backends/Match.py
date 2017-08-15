@@ -101,7 +101,7 @@ class Match:
         
         temp = []
         word = string.split()
-        for i in range(len(word)-1):
+        for i in range(len(word) - 1):
             if word[i] in organList and word[i+1] in feelingList:
                 temp.append(word[i] + word[i+1])
             

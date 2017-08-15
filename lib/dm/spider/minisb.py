@@ -164,7 +164,7 @@ class MiniSpider:
         retry = 0
         while retry < 10:
             try:
-                page = urllib.request.urlopen(url).read()    #type(page) = bytes
+                page = urllib.request.urlopen(req).read()    #type(page) = bytes
                 break
             except Exception as e:
                 print('warning: Error Http %s, url=%s' % (e, url), file = sys.stderr)
