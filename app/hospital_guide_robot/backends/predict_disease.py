@@ -1,6 +1,6 @@
 #coding = utf8
 import sys
-sys.path.append('../../../alg/basic')
+sys.path.append('/home/work/xiexueci/project/alg/basic')
 import str_util
 from pgmpy.models import BayesianModel
 from pgmpy.factors.discrete import TabularCPD
@@ -10,6 +10,8 @@ from pgmpy.readwrite import BIFReader, BIFWriter, XMLBIFReader, XMLBIFWriter, Pr
 import ahocorasick
 from Match import Match
 import math
+sys.path.append('/home/work/lixingjian/project/app/hospital_guide_robot/linear_model')
+import predict_linear
 
 
 UNWANTED = ['内科','外科','普通内科','中医科','普内','普内科','儿科','五官科','普通外科','普外科','普外','急诊科']
@@ -225,12 +227,25 @@ class Diagnosis:
         response['type'] = 0
         response['wei'] = 1   # This may need modification
 
+
         # 模型第一层 - 简单症状的直接映射
         first_prediction = self.find_obvious_sym(req_list, 'common.txt')
         if len(first_prediction) != 0:
             # Prediction success
             response['text'] = first_prediction
             return response
+
+        
+        self.predict_linear = predict_linear.Diagnosis()
+        Linear_prediction = self.predict_linear.run(buf)
+        response = Linear_prediction
+        if response['text'] != '':
+            return response
+        else:
+            pass
+             
+
+
 
         # 模型第二层 - 贝叶斯网络的应用
         candidates = self.get_candidate_list(observed_info_ori)
