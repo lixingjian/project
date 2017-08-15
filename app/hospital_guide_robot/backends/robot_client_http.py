@@ -23,7 +23,7 @@ def fake_input(buf, uid = 0):
     return request
 
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sk.connect(('10.80.28.209', 8888))  # 主动初始化与服务器端的连接
+sk.connect(('10.80.28.209', 8889))  # 主动初始化与服务器端的连接
 
 while 1:
     try:

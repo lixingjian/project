@@ -1,9 +1,9 @@
 #coding=utf-8
-
 from __future__ import unicode_literals
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.trainers import ListTrainer
+import sys
 
 class ChatterBot:
     def __init__(self):

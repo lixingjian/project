@@ -7,15 +7,7 @@ Author: Haozhe
 This file extacts the keywords from a patient's description and prints
 out the corresponding expressions stored in our dictionary
 
-Update(Aug 2, 2017) Incorporated synonyms while extracting keywords
-1. match() now must have 3 parameters
-2. Include a txt file of synonyms while runniing the program
-
-Update(Aug 3, 2017) Made some improvements
-1. Fixed a bug in wordInSym()
-2. Now the program can extract disease names from description
-
-Update(Aug 4, 2017) Include the function to extract organ keywords
+Update(Aug 9, 2017) Improvement made to reduce duplicated chars
 
 NOTE: Use Python 3.5 to run
 """
@@ -29,12 +21,14 @@ class Match:
         self.ac = ahocorasick.Automaton()
         self.synAc = ahocorasick.Automaton()
 
-    def load(self, fileName, organFile):
+    def load(self, fileName, organFile, commonFile, feelingFile):
         # Take in disease symptoms, names and related organs 
         result = []
         # Read the file in utf-8 to display Chinese characters
         inputData = codecs.open (fileName, 'r', 'utf-8')
         organData = codecs.open(organFile, 'r', 'utf-8')
+        commonData = codecs.open(commonFile, 'r', 'utf-8')
+        feelingData = codecs.open(feelingFile, 'r', 'utf-8')
         for line in inputData:
             currContent = json.loads(line)
             sym = currContent.get("symptoms")
@@ -42,9 +36,9 @@ class Match:
             for eachTuple in tuples:
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
             disease = currContent.get("name")
-            self.ac.add_word(disease, disease)
+            self.ac.add_word(disease, (len(self.ac),disease))
 
         for line in organData:
             curr = json.loads(line)
@@ -52,7 +46,15 @@ class Match:
             for eachTuple in organ.items():
                 if not eachTuple[0] in result:
                     result.append(eachTuple[0])
-                    self.ac.add_word(eachTuple[0], eachTuple[0])
+                    self.ac.add_word(eachTuple[0], (len(self.ac),eachTuple[0]))
+
+        for line in commonData:
+            sym_list = line.split(' ')[0].split(',')
+            for ele in sym_list:
+                self.ac.add_word(ele, (len(self.ac),ele))
+
+        for line in feelingData:
+            self.ac.add_word(line.rstrip(), (len(self.ac),line.rstrip()))
     
     def match(self, description, synFileName, sympFileName):
         # Process the description, removing adverbs and punctuations
@@ -60,8 +62,8 @@ class Match:
         adv = json.load(advFile)
         for eachAdv in adv:
             description = description.replace(eachAdv, "")
-        for punc in ["，","。","？","！", "、"," "]:
-            description = description.replace(punc, "")
+#        for punc in ["，","。","？","！", "、"," "]:
+#            description = description.replace(punc, "")
 
         synDict = self.createSynDict(synFileName,sympFileName)
         description = self.replaceSyn(description, synDict)
@@ -70,11 +72,48 @@ class Match:
         self.ac.make_automaton()
         result = []
         for end_index, symptom in self.ac.iter(description):
-            symptom = symptom + ' '
-            if not symptom in result:
-                result.append(symptom)
+            sym = symptom[1]
+            if not sym in result:
+                result.append(sym)
+        copy = []
+        for each in result:
+            copy.append(each)
+
+        for ele in result:
+            for other in result:
+                if ele == other:
+                    continue
+                if ele.find(other) >= 0 and other in copy:
+                    copy.remove(other)
+                else: 
+                    continue
+
         # Return a string format 
-        return ''.join(str(x) for x in result)
+        return ''.join((str(x) + ' ') for x in copy)
+
+    def combine(self, string, organFile, feelingFile):
+        organList = []
+        feelingList =[]
+        for line in open(organFile).readlines():
+            organList.append(line.rstrip())
+        for line in open(feelingFile).readlines():
+            feelingList.append(line.rstrip())
+        
+        temp = []
+        word = string.split()
+        for i in range(len(word) - 1):
+            if word[i] in organList and word[i+1] in feelingList:
+                temp.append(word[i] + word[i+1])
+            
+        result = string.split()
+        for each in word:
+            for i in range(len(temp)):
+                if temp[i].find(each) >= 0:
+                    result.remove(each)
+                    if temp[i] not in result:
+                        result.append(temp[i])
+
+        return ''.join((str(x) + ' ') for x in result)
 
     # Helper method which is used in createSynDict()
     def wordInSymp(self, wordString, sympList):
@@ -135,7 +174,14 @@ class Match:
 
 if __name__ == '__main__':
         matcher = Match()
-        matcher.load('disease_symptom.json', 'disease_organ.json')
+        matcher.load('disease_symptom.json', 'disease_organ.json', 'common.txt','feeling.txt')
         while 1:
-            res = matcher.match(input(u'请输入症状描述: '),'syn1.txt','disease_symptom.json')
-            print(res)
+            result = ''
+            description = input(u'请输入症状描述: ')
+            for eachPart in description.split('，'):
+                temp = matcher.match(eachPart,'syn1.txt','disease_symptom.json')
+                print('temp is ' + temp)
+                res = matcher.combine(temp, 'organ.txt', 'feeling.txt')
+                print('res is ' + res)
+                result = result + res
+            print(result)
