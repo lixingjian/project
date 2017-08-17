@@ -20,6 +20,7 @@ def main():
 #    symFile = open ('smallsym.txt', 'r')
 #    deptFile = open ('smalldept.txt', 'r')
 
+
     # Get the description of symptoms
     DES_list = symFile.readlines()
     print ("DES LEN: " + str(len(DES_list)))

@@ -10,7 +10,7 @@ from pgmpy.readwrite import BIFReader, BIFWriter, XMLBIFReader, XMLBIFWriter, Pr
 import ahocorasick
 from Match import Match
 import math
-sys.path.append('/home/work/lixingjian/project/app/hospital_guide_robot/linear_model')
+sys.path.append('linear_model')
 import predict_linear
 
 
@@ -235,9 +235,9 @@ class Diagnosis:
             response['text'] = first_prediction
             return response
 
-        
+        # 模型第二层 - 线性分类
         self.predict_linear = predict_linear.Diagnosis()
-        Linear_prediction = self.predict_linear.run(buf)
+        Linear_prediction = self.predict_linear.run(req_list[-1]['request']['text'])
         response = Linear_prediction
         if response['text'] != '':
             return response
@@ -247,7 +247,7 @@ class Diagnosis:
 
 
 
-        # 模型第二层 - 贝叶斯网络的应用
+        # 模型第三层 - 贝叶斯网络的应用
         candidates = self.get_candidate_list(observed_info_ori)
 
         observed_info = self.fea_to_id(observed_info_ori)
