@@ -1,0 +1,50 @@
+Tuple的格式
+( [器官A，器官B ... ],    [ [器官A方位],[器官B方位] ...],     str(人体组织),
+ str(人体指标),     str(问题或感觉),     [问题或感觉的形式],
+ int(问题或感觉的程度),     [不包含症状],     int(症状出现缓急),
+ int(症状出现频率),     int(症状出现时间),     int(症状持续时间),
+ str(起因，暂不填写),     str(加剧因素，暂不填写),     str(缓解因素，暂不填写),
+ [病史],     [怀疑疾病],     [排除疾病] )
+
+所使用词典名称:
+器官 organ_nlp
+方位 location_nlp
+人体组织 tissue_nlp
+人体指标 indicator_nlp
+问题或感觉 problem_nlp + feeling_nlp
+问题或感觉的形式 暂无
+问题或感觉的程度 severity_nlp
+不包含症状 symp_nlp
+症状出现缓急 suddenness_nlp
+症状出现频率 frequency_nlp
+症状出现时间 time_nlp
+症状持续时间 time_nlp
+起因 暂无
+加剧因素 暂无
+缓解因素 暂无
+病史 disease_nlp
+怀疑疾病 disease_nlp
+排除疾病 disease_nlp
+
+症状出现频率的等级划分
+总是 3
+经常 2
+有时 1
+
+症状程度的等级划分
+严重 3
+适中 2
+轻微 1
+
+症状出现缓急的等级划分
+急 2
+缓 1
+
+出现时间及持续时间等级划分
+time > 三个月 7
+一个月 < time <= 三个月 6
+一星期 < time <= 一个月 5
+三天(72h) < time <= 一星期 4
+一天(24h) < time <= 三天(72h) 3
+2h < time <= 24h 2
+time <= 2h 1
