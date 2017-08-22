@@ -5,7 +5,8 @@ from pyltp import NamedEntityRecognizer
 from pyltp import Parser
 import numpy as np
 import sys
-sys.path.append('../../../alg/basic')
+sys.path.append('/home/work/lixingjian/project/alg/basic')
+#sys.path.append('../../../alg/basic')
 import str_util
 
 class LexParser:
@@ -86,8 +87,8 @@ class LexParser:
         if self.use_parser:
             self.parser.release()  # 释放模型
 
-lex = LexParser('/data/nlp/ltp_data')
 if __name__ == '__main__':
+    lex = LexParser('/data/nlp/ltp_data')
     while 1:
         try:
             buf = input().rstrip()
@@ -95,16 +96,18 @@ if __name__ == '__main__':
             break
         a = buf.split('\t')
         s1 = a[0]
-        s2 = a[1]
         ret = lex.run(s1)
         nw = len(ret[0])
         for i in range(nw):
             print('%s/%s/%s/%d:%s\t' % (ret[0][i], ret[1][i], ret[2][i], ret[3][i].head, ret[3][i].relation))
         print('')
-        ret2 = lex.run(s2)
-        nw = len(ret2[0])
-        for i in range(nw):
-            print('%s/%s/%s/%d:%s\t' % (ret2[0][i], ret2[1][i], ret2[2][i], ret2[3][i].head, ret2[3][i].relation))
-        print('')
-        score = lex.sim(ret[0], ret2[0])
-        print('sim\t%s\t%s\t%f' % (s1, s2, score))
+        
+        if len(a) > 1:
+            s2 = a[1]
+            ret2 = lex.run(s2)
+            nw = len(ret2[0])
+            for i in range(nw):
+                print('%s/%s/%s/%d:%s\t' % (ret2[0][i], ret2[1][i], ret2[2][i], ret2[3][i].head, ret2[3][i].relation))
+            print('')
+            score = lex.sim(ret[0], ret2[0])
+            print('sim\t%s\t%s\t%f' % (s1, s2, score))
