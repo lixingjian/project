@@ -13,6 +13,9 @@ from pyltp import Postagger
 from pyltp import Parser
 #from Match import Match
 
+prob_temp = []
+form_temp = []
+
 class Extractor:
     def __init__(self):
         self.segmentor = Segmentor()
@@ -43,16 +46,26 @@ class Extractor:
         #synDict = matcher.createSynDict('syn1.txt', 'symp_nlp')
         #description = matcher.replaceSyn(description, synDict)
         print(description)
-
-        res = ()
         words = self.segmentor.segment(description)
-        #print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
-        #print('\t'.join(word for word in list(words)))
-
         postags = self.postagger.postag(words)
         arcs = self.parser.parse(words, postags)
-        #print ("\t".join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
-        
+
+        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        print('\t'.join(word for word in list(words)))
+        print ("\t".join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+
+        num_of_tuple = self.find_num_of_tuple(words, arcs)
+        tuples = []
+
+        for num in range(num_of_tuple):
+            tuples.append(self.construct_tuple(description, num))
+
+        prob_temp = []
+        form_temp = []
+
+        return tuples
+
+    def construct_tuple(self, description, num):
         """
         Tuple格式如下：
 
@@ -65,6 +78,11 @@ class Extractor:
             str(缓解因素，暂不填写),
              [病史],     [怀疑疾病],     [排除疾病] )
         """
+
+        res = ()
+        words = self.segmentor.segment(description)
+        postags = self.postagger.postag(words)
+        arcs = self.parser.parse(words, postags)
 
         # Initialize all elements in the tuple
         organs = []
@@ -83,7 +101,7 @@ class Extractor:
         relief = '缓解因素暂无'   # Not considered in this phase
         history = ['病史处理中']
         suspect = []
-        eliminate = ['排除疾病处理中']
+        eliminate = []
 
         # Iterate through every single word
         for i in range(len(words)):
@@ -99,11 +117,11 @@ class Extractor:
             # Get indicator
             elif words[i] in self.indicator_list and not ('I_' + words[i]) in indicator:
                 indicator.append('I_' + words[i])
-            elif words[i] in self.problem_list and not ('P_' + words[i]) in problem:
-                problem.append('P_' + words[i])
+            #elif words[i] in self.problem_list and not ('P_' + words[i]) in problem:
+                #problem.append('P_' + words[i])
             # Get severity
             elif words[i] in self.severity_dict:
-                severity = int(self.severity_dict.get(words[i]))
+                severity = max(int(self.severity_dict.get(words[i])), severity)
             # Get suddenness
             elif words[i] in self.suddenness_dict:
                 suddenness = int(self.suddenness_dict.get(words[i]))
@@ -117,11 +135,14 @@ class Extractor:
             elif words[i] in self.disease_list:
                 pass
             elif words[i] in self.time_dict:
-                time = int(self.time_dict.get(words[i]))
+                time = max(int(self.time_dict.get(words[i])), time)
+
+        for each in description:
+            if each in self.severity_dict:
+                severity = int(self.severity_dict.get(each))
                 
-            
         # Get the problems
-        temp_problem = self.find_problem(words,arcs)
+        temp_problem = self.find_problem(words, arcs, num)
         for ele in temp_problem:
             if  ele in problem or ('P_' + ele) in problem:
                 continue
@@ -144,7 +165,7 @@ class Extractor:
             if ele in indicator:
                 indicator.remove(ele)
 
-        temp_form = self.find_form(words, arcs)
+        temp_form = self.find_form(words, arcs, num)
         for ele in temp_form:
             form.append(ele)
         for ele in temp_form:
@@ -165,7 +186,8 @@ class Extractor:
             suspect.append(to_remove)
             history.remove(to_remove)
             eliminate.remove(to_remove)
-        
+       
+        # Formatting the output of tuple
         if len(organs) == 0:
            res += (['Organ list is empty'],)
         else:
@@ -244,29 +266,31 @@ class Extractor:
             k += 1
         return children
 
-    def find_form(self, words, arcs):
+    def find_form(self, words, arcs, num):
         form = []
-        temp = []
         head_index = self.find_head_index(arcs)
-        children = self.find_children(words, head_index, words[head_index], arcs)
-        for child, index in children:
-            if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                if not child in temp and not child in self.location_list:
-                    form.append(child)
-                    temp.append(child)
+        if num == 0:
+            children = self.find_children(words, head_index, words[head_index], arcs)
+            for child, index in children:
+                if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
+                    if not child in form_temp and not child in self.location_list:
+                        form.append(child)
+                        form_temp.append(child)
 
-        """
-        j = 0
-        for arc in arcs:
-            if arc.head == head_index + 1 and arc.relation == 'COO':
-                children = self.find_children(words, j, words[j], arcs)
-                for child, index in children:
-                    if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                        if not child in temp and not child in self.location_list:
-                            form.append(child)
-                            temp.append(child)
-            j += 1
-        """
+        else:
+            j = 0
+            k = 0
+            for arc in arcs:
+                if arc.head == head_index + 1 and arc.relation == 'COO':
+                    j += 1
+                    if j == num:
+                        children = self.find_children(words, k, words[k], arcs)
+                        for child, index in children:
+                            if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
+                                if not child in form_temp and not child in self.location_list:
+                                    form.append(child)
+                                    form_temp.append(child)
+                k += 1
 
         return form
 
@@ -366,37 +390,56 @@ class Extractor:
         return location
 
     # Find the words that describe problem
-    def find_problem(self, words, arcs):
+    def find_problem(self, words, arcs, num):
         problem = []
-        temp = []
         head_index = self.find_head_index(arcs)
-        # Add head to the list
-        if words[head_index] in self.feeling_list and not words[head_index] in temp:
-            problem.append('F_' + words[head_index])
-            temp.append(words[head_index])
-        elif words[head_index] in self.problem_list and not words[head_index] in temp:
-            problem.append('P_' + words[head_index])
-            temp.append(words[head_index])
-        elif not words[head_index] in temp:
-            problem.append(words[head_index])
-            temp.append(words[head_index])
+        if num == 0:
+            # Add head to the list
+            if words[head_index] in self.feeling_list and not words[head_index] in prob_temp:
+                problem.append('F_' + words[head_index])
+                prob_temp.append(words[head_index])
+            elif words[head_index] in self.problem_list and not words[head_index] in prob_temp:
+                problem.append('P_' + words[head_index])
+                prob_temp.append(words[head_index])
+            elif not words[head_index] in prob_temp:
+                problem.append(words[head_index])
+                prob_temp.append(words[head_index])
 
-        """
-        # Add all COO words of head to the list
-        j = 0
-        for arc in arcs:
-            if arc.head == head_index + 1 and arc.relation == 'COO':
-                if words[j] in self.feeling_list and not words[j] in temp:
-                    problem.append('F_' + words[j])
-                    temp.append(words[j])
-                elif words[j] in self.problem_list and not words[j] in temp:
-                    problem.append('P_' + words[j])
-                    temp.append(words[j])
-                elif not words[j] in temp:
-                    problem.append(words[j])
-                    temp.append(words[j])
-            j += 1
-        """
+        else:
+            # Add the corresponding COO words of head to the list
+            j = 0
+            k = 0
+            found_COO = False
+            for arc in arcs:
+                if arc.head == head_index + 1 and arc.relation == 'COO':
+                    j += 1
+                    if j == num:
+                        if words[k] in self.feeling_list and not words[k] in prob_temp:
+                            problem.append('F_' + words[k])
+                            prob_temp.append(words[k])
+                            found_COO = True
+                            break
+                        elif words[k] in self.problem_list and not words[k] in prob_temp:
+                            problem.append('P_' + words[k])
+                            prob_temp.append(words[k])
+                            found_COO = True
+                            break
+                        elif not words[k] in prob_temp:
+                            problem.append(words[k])
+                            prob_temp.append(words[k])
+                            found_COO = True
+                            break
+                k += 1
+            
+            if not found_COO:
+                in_prob_list = []
+                for word in words:
+                    if word in self.problem_list:
+                        in_prob_list.append(word)
+
+                index = num - j - 1
+                problem.append('P_' + in_prob_list[index])
+
         return problem
 
     def find_disease(self, description, input_file):
@@ -411,7 +454,7 @@ class Extractor:
                     words = self.segmentor.segment(each)
                     for word in words:
                         if word in self.disease_list:
-                            result.append(word)
+                            result.append('D_' + word)
         return result
 
     # Find subject words
@@ -424,6 +467,22 @@ class Extractor:
                 subject.append(words[j])
             j += 1
         return subject
+
+    def find_num_of_tuple(self, words, arcs):
+        head_index = self.find_head_index(arcs)
+        j = 0
+        k = 0
+        for arc in arcs:
+            if arc.head == head_index + 1 and arc.relation == 'COO':
+                if not words[k] in self.problem_list: 
+                    j += 1
+            k += 1
+
+        for word in words:
+            if word in self.problem_list:
+                j += 1
+
+        return j
 
     # Helper method to load a list from a file
     def load_list(self, inFile):
@@ -461,15 +520,16 @@ if __name__ == '__main__':
                 i += 1
                 continue
             res = extractor.extract(userInput)
-            print()
-            print(res)
+            for ele in res:
+                print(ele)
+                print()
             i += 1
         extractor.release()
     else:
         f = codecs.open('symptom_input.txt', 'r', 'utf-8')
         for line in f.readlines():
             res = extractor.extract(line)
-            print()
-            print(res[1])
-
+            for ele in res:
+                print(ele)
+                print()
         extractor.release()
