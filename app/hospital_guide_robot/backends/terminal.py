@@ -36,7 +36,7 @@ class Terminal:
         wei_list = [0, 1, 1]
         if (q.find('挂') > 0 or q.find('看') > 0) and q.find('科') > 0:
             wei_list = [1, 0, 0]
-        if q.find('在哪') > 0 or q.find('怎么走') > 0:
+        if q.find('我想') > 0 or q.find('我要') > 0 or q.find('在哪') > 0 or q.find('怎么走') > 0:
             wei_list = [0, 1, 0]
         return wei_list
 
