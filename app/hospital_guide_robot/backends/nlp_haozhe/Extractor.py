@@ -13,9 +13,6 @@ from pyltp import Postagger
 from pyltp import Parser
 #from Match import Match
 
-prob_temp = []
-form_temp = []
-
 class Extractor:
     def __init__(self):
         self.segmentor = Segmentor()
@@ -39,6 +36,14 @@ class Extractor:
         self.time_dict = self.load_dict('time_nlp')
         self.disease_list = self.load_list('disease_nlp')
         self.negative_list = self.load_list('negative_nlp')
+        self.prob_temp = []
+        self.form_temp = []
+        self.in_prob_list = []
+
+    def reset(self):
+        self.prob_temp = []
+        self.form_temp = []
+        self.in_prob_list = []
 
 
     def extract(self, description):
@@ -59,9 +64,6 @@ class Extractor:
 
         for num in range(num_of_tuple):
             tuples.append(self.construct_tuple(description, num))
-
-        prob_temp = []
-        form_temp = []
 
         return tuples
 
@@ -99,7 +101,7 @@ class Extractor:
         trigger = '起因暂无'      # Not considered in this phase
         worsen = '加剧因素暂无'   # Not considered in this phase
         relief = '缓解因素暂无'   # Not considered in this phase
-        history = ['病史处理中']
+        history = []
         suspect = []
         eliminate = []
 
@@ -177,6 +179,7 @@ class Extractor:
         suspect = self.find_disease(description, 'suspect_nlp')
         eliminate = self.find_disease(description, 'eliminate_nlp')
 
+        """
         to_remove = ''
         for ele in history:
             for another in eliminate:
@@ -186,62 +189,29 @@ class Extractor:
             suspect.append(to_remove)
             history.remove(to_remove)
             eliminate.remove(to_remove)
-       
+        """
+
         # Formatting the output of tuple
-        if len(organs) == 0:
-           res += (['Organ list is empty'],)
-        else:
-            res += (organs,)
-
-        if len(location) == 0:
-           res += (['Location list is empty'],)
-        else:
-            res += (location,)
-            
-        if len(tissue) == 0:
-           res += (['Tissue list is empty'],)
-        else:
-            res += (tissue,)
-
-        if len(indicator) == 0:
-           res += (['Indicator list is empty'],)
-        else:
-            res += (indicator,)
-
-        if len(problem) == 0:
-           res += (['Problem list is empty'],)
-        else:
-            res += (problem,)
-
-        if len(form) == 0:
-           res += (['Form list is empty'],)
-        else:
-            res += (form,)
+        res = self.format_tuple(res, organs, 'Organ')
+        res = self.format_tuple(res, location, 'Location')
+        res = self.format_tuple(res, tissue, 'Tissue')
+        res = self.format_tuple(res, indicator, 'Indicator')
+        res = self.format_tuple(res, problem, 'Problem')
+        res = self.format_tuple(res, form, 'Form')
         res +=  (severity,) 
-        if len(not_included) == 0:
-           res += (['Not_included list is empty'],)
-        else:
-            res += (not_included,)
-
+        res = self.format_tuple(res, not_included, 'Not_included')
         res +=  (suddenness,) + (frequency,) + (time,)
-
         res +=  (trigger,) + (worsen,) + (relief,)
+        res = self.format_tuple(res, history, 'History')
+        res = self.format_tuple(res, suspect, 'Suspect')
+        res = self.format_tuple(res, eliminate, 'Eliminate')
+        return res
 
-        if len(history) == 0:
-           res += (['History list is empty'],)
+    def format_tuple(self, res, in_list, name):
+        if len(in_list) == 0:
+            res += ([ name + ' list is empty'],)
         else:
-            res += (history,)
-
-        if len(suspect) == 0:
-           res += (['Suspect list is empty'],)
-        else:
-            res += (suspect,)
-
-        if len(eliminate) == 0:
-           res += (['Eliminate list is empty'],)
-        else:
-            res += (eliminate,)
-
+            res += (in_list,)
         return res
 
     # Helper method to find the word index of head
@@ -273,9 +243,9 @@ class Extractor:
             children = self.find_children(words, head_index, words[head_index], arcs)
             for child, index in children:
                 if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                    if not child in form_temp and not child in self.location_list:
+                    if not child in self.form_temp and not child in self.location_list:
                         form.append(child)
-                        form_temp.append(child)
+                        self.form_temp.append(child)
 
         else:
             j = 0
@@ -287,9 +257,9 @@ class Extractor:
                         children = self.find_children(words, k, words[k], arcs)
                         for child, index in children:
                             if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                                if not child in form_temp and not child in self.location_list:
+                                if not child in self.form_temp and not child in self.location_list:
                                     form.append(child)
-                                    form_temp.append(child)
+                                    self.form_temp.append(child)
                 k += 1
 
         return form
@@ -395,15 +365,15 @@ class Extractor:
         head_index = self.find_head_index(arcs)
         if num == 0:
             # Add head to the list
-            if words[head_index] in self.feeling_list and not words[head_index] in prob_temp:
+            if words[head_index] in self.feeling_list and not words[head_index] in self.prob_temp:
                 problem.append('F_' + words[head_index])
-                prob_temp.append(words[head_index])
-            elif words[head_index] in self.problem_list and not words[head_index] in prob_temp:
+                self.prob_temp.append(words[head_index])
+            elif words[head_index] in self.problem_list and not words[head_index] in self.prob_temp:
                 problem.append('P_' + words[head_index])
-                prob_temp.append(words[head_index])
-            elif not words[head_index] in prob_temp:
+                self.prob_temp.append(words[head_index])
+            elif not words[head_index] in self.prob_temp:
                 problem.append(words[head_index])
-                prob_temp.append(words[head_index])
+                self.prob_temp.append(words[head_index])
 
         else:
             # Add the corresponding COO words of head to the list
@@ -414,46 +384,47 @@ class Extractor:
                 if arc.head == head_index + 1 and arc.relation == 'COO':
                     j += 1
                     if j == num:
-                        if words[k] in self.feeling_list and not words[k] in prob_temp:
+                        if words[k] in self.feeling_list and not words[k] in self.prob_temp:
                             problem.append('F_' + words[k])
-                            prob_temp.append(words[k])
+                            self.prob_temp.append(words[k])
                             found_COO = True
                             break
-                        elif words[k] in self.problem_list and not words[k] in prob_temp:
+                        elif words[k] in self.problem_list and not words[k] in self.prob_temp:
                             problem.append('P_' + words[k])
-                            prob_temp.append(words[k])
+                            self.prob_temp.append(words[k])
                             found_COO = True
                             break
-                        elif not words[k] in prob_temp:
+                        elif not words[k] in self.prob_temp:
                             problem.append(words[k])
-                            prob_temp.append(words[k])
+                            self.prob_temp.append(words[k])
                             found_COO = True
                             break
+                        else:
+                            return problem
                 k += 1
             
             if not found_COO:
-                in_prob_list = []
                 for word in words:
-                    if word in self.problem_list:
-                        in_prob_list.append(word)
+                    if word in self.problem_list and not word in self.in_prob_list and not word in self.prob_temp:
+                        self.in_prob_list.append(word)
 
                 index = num - j - 1
-                problem.append('P_' + in_prob_list[index])
+                problem.append('P_' + self.in_prob_list[index])
 
         return problem
 
     def find_disease(self, description, input_file):
-        for punc in ['。',' ','！','？','；','：']:
+        for punc in [u'。',' ',u'！',u'？',u'；',u'：',',','.','?','!']:
             description.replace(punc, '，')
         desc_list = description.split('，')
-        suspect_list = self.load_list(input_file)
+        keyword_list = self.load_list(input_file)
         result = []
         for each in desc_list:
-            for ele in suspect_list:
-                if each.find(ele) >= 0:
+            for ele in keyword_list:
+                if each.find(ele.rstrip()) >= 0:
                     words = self.segmentor.segment(each)
                     for word in words:
-                        if word in self.disease_list:
+                        if word in self.disease_list and not ('D_' + word) in result:
                             result.append('D_' + word)
         return result
 
@@ -470,16 +441,20 @@ class Extractor:
 
     def find_num_of_tuple(self, words, arcs):
         head_index = self.find_head_index(arcs)
-        j = 0
+        temp = []
+        temp.append(words[head_index])
+        j = 1
         k = 0
         for arc in arcs:
             if arc.head == head_index + 1 and arc.relation == 'COO':
-                if not words[k] in self.problem_list: 
+                if not words[k] in self.problem_list and not words[k] in temp: 
+                    temp.append(words[k])
                     j += 1
             k += 1
 
         for word in words:
-            if word in self.problem_list:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
                 j += 1
 
         return j
@@ -524,6 +499,7 @@ if __name__ == '__main__':
                 print(ele)
                 print()
             i += 1
+            extractor.reset()
         extractor.release()
     else:
         f = codecs.open('symptom_input.txt', 'r', 'utf-8')
@@ -532,4 +508,5 @@ if __name__ == '__main__':
             for ele in res:
                 print(ele)
                 print()
+            extractor.reset()
         extractor.release()
