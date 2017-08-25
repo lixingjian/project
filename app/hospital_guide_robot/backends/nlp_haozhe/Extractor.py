@@ -208,10 +208,11 @@ class Extractor:
         return res
 
     def format_tuple(self, res, in_list, name):
-        if len(in_list) == 0:
-            res += ([ name + ' list is empty'],)
-        else:
-            res += (in_list,)
+        #if len(in_list) == 0:
+        #    res += ([ name + ' list is empty'],)
+        #else:
+        #    res += (in_list,)
+        res += (in_list,)
         return res
 
     # Helper method to find the word index of head
