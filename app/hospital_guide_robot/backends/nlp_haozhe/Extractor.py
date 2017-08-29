@@ -45,8 +45,27 @@ class Extractor:
         self.form_temp = []
         self.in_prob_list = []
 
+    def extract_tuple(self, description):
+        print(description)
+        words = self.segmentor.segment(description)
+        postags = self.postagger.postag(words)
+        arcs = self.parser.parse(words, postags)
 
-    def extract(self, description):
+        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        print('\t'.join(word for word in list(words)))
+        print ("\t".join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+
+        num_of_tuple = self.find_num_of_tuple(words, arcs)
+        tuples = []
+
+        for num in range(num_of_tuple):
+            tuples.append(self.construct_tuple(description, num))
+
+        tuples = self.del_extra(tuples)
+
+        return tuples
+
+    def extract_dict(self, description):
         #matcher = Match()
         #synDict = matcher.createSynDict('syn1.txt', 'symp_nlp')
         #description = matcher.replaceSyn(description, synDict)
@@ -65,7 +84,46 @@ class Extractor:
         for num in range(num_of_tuple):
             tuples.append(self.construct_tuple(description, num))
 
-        return tuples
+        tuples = self.del_extra(tuples)
+
+        final = []
+        for each in tuples:
+            result = self.change_tuple_to_dict(each)
+            final.append(result)
+
+        return final
+
+    def change_tuple_to_dict(self, in_tuple):
+        result = {}
+        result['Organ'] = in_tuple[0]
+        result['Location'] = in_tuple[1]
+        result['Tissue'] = in_tuple[2]
+        result['Indicator'] = in_tuple[3]
+        result['Problem'] = in_tuple[4]
+        result['Form'] = in_tuple[5]
+        result['Severity'] = in_tuple[6]
+        result['Not included'] = in_tuple[7]
+        result['Suddenness'] = in_tuple[8]
+        result['Frequency'] = in_tuple[9]
+        result['Time'] = in_tuple[10]
+        result['Trigger'] = in_tuple[11]
+        result['Worsening Factor'] = in_tuple[12]
+        result['Relief Factor'] = in_tuple[13]
+        result['History'] = in_tuple[14]
+        result['Suspect'] = in_tuple[15]
+        result['Eliminate'] = in_tuple[16]
+        return result
+
+    # 用词典过滤多余词条
+    def del_extra(self, tuples):
+        copy = []
+        for ele in tuples:
+            if len(ele[4]) == 0:
+                continue
+            if ele[4][0].find('_') >= 0:
+                copy.append(ele)
+        return copy
+
 
     def construct_tuple(self, description, num):
         """
@@ -248,7 +306,7 @@ class Extractor:
                         form.append(child)
                         self.form_temp.append(child)
 
-        else:
+        elif num <= self.find_num_of_COO(words, arcs):
             j = 0
             k = 0
             for arc in arcs:
@@ -262,6 +320,17 @@ class Extractor:
                                     form.append(child)
                                     self.form_temp.append(child)
                 k += 1
+
+        else:
+            for i in range(len(words)):
+                if not arcs[i].head == head_index:
+                    if words[i] in self.problem_list or words[i] in self.feeling_list:
+                        children = self.find_children(words, i, words[i], arcs)
+                        for child, index in children:
+                            if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOC':
+                                if not child in self.form_temp and not child in self.location_list:
+                                    form.append(child)
+                                    self.form_temp.append(child)
 
         return form
 
@@ -460,6 +529,19 @@ class Extractor:
 
         return j
 
+    def find_num_of_COO(self, words, arcs):
+        head_index = self.find_head_index(arcs)
+        temp = []
+        temp.append(words[head_index])
+        j = 0
+        k = 0
+        for arc in arcs:
+            if arc.head == head_index + 1 and arc.relation == 'COO':
+                if not words[k] in self.problem_list and not words[k] in temp: 
+                    temp.append(words[k])
+                    j += 1
+        return j
+
     # Helper method to load a list from a file
     def load_list(self, inFile):
         res_list = []
@@ -495,7 +577,7 @@ if __name__ == '__main__':
             if len(userInput) == 0:
                 i += 1
                 continue
-            res = extractor.extract(userInput)
+            res = extractor.extract_dict(userInput)
             for ele in res:
                 print(ele)
                 print()

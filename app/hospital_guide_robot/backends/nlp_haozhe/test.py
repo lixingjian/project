@@ -3,6 +3,7 @@
 import codecs
 import statistics
 from Extractor import Extractor
+from collections import OrderedDict
 
 """
 Tuple样例格式：
@@ -323,6 +324,40 @@ def calculate_disease_part(correct, extract, index, total_score):
 
     return curr_score
 
+def find_acceptable(correct, extract):
+    acceptable = 0
+    for i in range(1, len(correct)):
+        for ele in extract:
+            if len(ele[4]) == 0:
+                continue
+            correct_prob = correct[i][4][0]
+            extract_prob = ele[4][0]
+            if correct_prob.find(extract_prob.split('_')[-1]) >= 0 or extract_prob.find(correct_prob) >= 0:
+                acceptable += 1
+    return acceptable
+
+def change_tuple_to_dict(in_tuple):
+    result = OrderedDict()
+    result['Organ'] = in_tuple[0]
+    result['Location'] = in_tuple[1]
+    result['Tissue'] = in_tuple[2]
+    result['Indicator'] = in_tuple[3]
+    result['Problem'] = in_tuple[4]
+    result['Form'] = in_tuple[5]
+    result['Severity'] = in_tuple[6]
+    result['Not included'] = in_tuple[7]
+    result['Suddenness'] = in_tuple[8]
+    result['Frequency'] = in_tuple[9]
+    result['Time'] = in_tuple[10]
+    result['Trigger'] = in_tuple[11]
+    result['Worsening Factor'] = in_tuple[12]
+    result['Relief Factor'] = in_tuple[13]
+    result['History'] = in_tuple[14]
+    result['Suspect'] = in_tuple[15]
+    result['Eliminate'] = in_tuple[16]
+    # ordered = OrderedDict(sorted(result.items(), key = lambda t:t[0]))
+    return result
+
 
 # Main function starts here
 i = 0
@@ -330,20 +365,37 @@ lines = read_file()
 extractor = Extractor()
 overall = 0
 scores = []
+acceptable = 0
+num_of_tuples = 0
 while i < len(lines):
     print ('Test No. ' + str(int(i / 18 + 1)))
     one_set = get_one_set(lines)
-    result = extractor.extract(one_set[0])
+    result = extractor.extract_tuple(one_set[0])
 
     print('\nIdeal results are: ')
     for j in range(1, len(one_set)):
-        print(one_set[j])
+        print(change_tuple_to_dict(one_set[j]))
         print()
 
     print('\nExtracted results are: ')
     for each in result:
-        print(each)
+        print(change_tuple_to_dict(each))
         print()
+    
+    if len(result) == 0:
+        print('This one has no extracted results.')
+        total = 0
+
+        print('Total: %.1f/100' % total)
+
+        overall += total
+        scores.append(total)
+
+        print('\n')
+        print('----------------------------------------------------------')
+        extractor.reset()
+        i += 18
+        continue
 
     organ_score = calculate_organ_part(one_set, result)
     print('Organ score: %.1f/30' % organ_score)
@@ -376,16 +428,27 @@ while i < len(lines):
     overall += total
     scores.append(total)
 
+    acceptable += find_acceptable(one_set, result)
+    num_of_tuples += len(result)
+
     i += 18
     print('\n')
     print('----------------------------------------------------------')
     extractor.reset()
 
-average = overall/100.0
-print('Average is %.2f' % average)
 median = statistics.median(scores)
-print('Median is %.2f' % median)
+print('Median score is %.3f' % median)
 
+average = overall/100.0
+print('Average score is %.3f' % average)
+print('R value is %.3f' % (average / 100))
+
+P = float(acceptable) / float(num_of_tuples)
+print('P value is %.3F' % P)
+
+F1 = (2 * P * average / 100) / (P + average / 100)
+print('F1 is %.3f' % F1)
+print()
 above90 = 0
 bw8090 = 0
 bw7080 = 0
