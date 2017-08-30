@@ -123,6 +123,8 @@ def get_one_set(lines):
 def get_all_content(list_of_lists):
     result = []
     for each_list in list_of_lists:
+        if each_list == None:
+            continue
         if len(each_list) == 0:
             continue
         for ele in each_list:
