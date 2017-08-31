@@ -174,28 +174,21 @@ class Extractor:
             # Get indicator
             elif words[i] in self.indicator_list and not ('I_' + words[i]) in indicator:
                 indicator.append('I_' + words[i])
-            # Get severity
-            elif words[i] in self.severity_dict:
-                severity = max(int(self.severity_dict.get(words[i])), severity)
-            # Get suddenness
-            elif words[i] in self.suddenness_dict:
-                suddenness = int(self.suddenness_dict.get(words[i]))
-            # Get frequency
-            elif words[i] in self.frequency_dict:
-                frequency = int(self.frequency_dict.get(words[i]))
-            # Get problems that are not part of the actual symptom
             # 处理有否定含义的信息
             elif words[i] in self.negative_list:
                 self.find_not_included(list(words), i, words[i], arcs, not_included)
             elif words[i] in self.time_dict:
                 time = max(int(self.time_dict.get(words[i])), time)
 
-        for each in description:
-            if each in self.severity_dict:
-                severity = int(self.severity_dict.get(each))
-         
+        #for each in description:
+            #if each in self.severity_dict:
+                #severity = int(self.severity_dict.get(each))
+
         problem.append(self.find_problem(words, arcs, num))
         form = self.find_form(words, arcs, num)
+        severity = self.find_severity(words, arcs, num)
+        frequency = self.find_frequency(words, arcs, num)
+        suddenness = self.find_suddenness(words, arcs, num)
 
         head_index = self.find_head_index(arcs)
         # Remove the duplicates
@@ -276,6 +269,84 @@ class Extractor:
                 children.append((words[k], k))
             k += 1
         return children
+    
+    def find_suddenness(self, words, arcs, num):
+        suddenness = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
+
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.suddenness_dict:
+                suddenness = int(self.suddenness_dict.get(child))
+
+        return suddenness
+
+    def find_frequency(self, words, arcs, num):
+        frequency = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
+
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.frequency_dict:
+                frequency = int(self.frequency_dict.get(child))
+
+        return frequency
+
+    def find_severity(self, words, arcs, num):
+        severity = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
+
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.severity_dict:
+                severity = int(self.severity_dict.get(child))
+
+        return severity
 
     # Method to find form of the problem
     def find_form(self, words, arcs, num):
@@ -390,14 +461,11 @@ class Extractor:
                 if words[head_val - 1] in self.location_list:
                     location.append('L_' + words[head_val - 1])
                 elif arc.relation == 'ATT':
-                    #location.append(words[head_val - 1])
                     j = 0
                     for arc2 in arcs:
                         if arc2.head == head_val and arc2.relation == 'COO':
                             if words[j] in self.location_list:
                                 location.append('L_' + words[j])
-                            #else:
-                                #location.append(words[j])
                         j += 1
             k += 1
         return location
@@ -442,7 +510,6 @@ class Extractor:
         return subject
 
     def find_num_of_tuple(self, words, arcs):
-        #head_index = self.find_head_index(arcs)
         temp = []
         j = 0
         for word in words:
