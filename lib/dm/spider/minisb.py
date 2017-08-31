@@ -10,6 +10,7 @@ import requests
 import traceback
 from collections import deque
 from bs4 import BeautifulSoup
+from pybloom import BloomFilter
 sys.path.append('../../../alg/basic')#加入这个才能搜索到下面的
 import str_util
 import proxyip
@@ -88,20 +89,17 @@ class MiniSpider:
         self.file_max_size = file_max_size
         self.debug = debug
         self.time_initial = int(time.time())
-        self.url_num_last = 0
-        self.old_url_queue = [] #用于存储解析的网址
-        self.old_url_queue_len = 10000
 
 
     def prepare(self):
         os.system('mkdir -p %s' % self.result_dir)
         os.system('touch %s.queue' % self.url_db_dir)#如果文件存在则不覆盖
         os.system('touch %s.log' % self.url_db_dir)
-        
         self.file_id = len(os.listdir(self.result_dir))
         #修复bug  从新运行程序不会新增文件夹，而是读取新文件url个数，获取url_num
         #初始化url_num值
-        f = open(self.result_dir + '/' +str(len(os.listdir(self.result_dir))),'rb')
+        print('--------check result_dir--------')
+        f = open(self.result_dir + '/' +str(len(os.listdir(self.result_dir))),'rb')#判断当前文件的url数量，以后将在文件尾追加
         f_line = f.readline()
         self.url_num = 0
         while f_line:
@@ -109,7 +107,7 @@ class MiniSpider:
                 self.url_num += 1
             f_line = f.readline()
         f.close()
-
+        print('    file:%s  url_num:%d' %(len(os.listdir(self.result_dir)),self.url_num))
         self.file_len_cur = 0
         self.file_len_total = 0
         socket.setdefaulttimeout(self.time_out)
@@ -119,15 +117,21 @@ class MiniSpider:
         for url in self.entry_list:
             self.url_queue.append(url)  #将seed加入到队尾时
         
-        url_queue_len = len(self.url_queue)
-        if url_queue_len > self.old_url_queue_len:
-            self.old_url_queue = self.url_queue[url_queue_len - self.old_url_queue_len:url_queue_len]
-        else:
-            self.old_url_queue = self.url_queue
-        #print("old_url_queue_len:%d" %len(self.old_url_queue))
-
-        #todo: 判断目录是否存在
-        #todo: 判断其他数值参数是否合理
+        #增加Bloom Filter  读取数据库，存入Bloom Filter中
+        print('--------read database and put it in Bloom Filter--------')
+        self.bf = BloomFilter(capacity = 20000000,error_rate = 0.00008)
+        db = leveldb.LevelDB(self.url_db_dir)
+        db_num = len(os.listdir(self.url_db_dir))
+        print("    db_num:%d" %db_num)
+        read_db_num = 0
+        for k in db.RangeIter(include_value = False):
+            read_db_num += 1
+            if read_db_num % 100 == 0:
+                print(".",end = '')
+                sys.stdout.flush()
+            if read_db_num % 10000 == 0:
+                print("    complete: %f" %(read_db_num / db_num))
+            self.bf.add(k.decode('utf-8'))
         return True
 
     #每个线程工作过程：pop一个url，判断是否已经在db中，如果在则继续pop，直到得到或队列空；抓取，如果成功则存储并且解析超链接加入队列，否则下一次pop
@@ -274,30 +278,20 @@ class MiniSpider:
             if self.debug:        
                 print('link\t%s\t%s\t%d' % (ori_url, link, valid), file = sys.stderr)
             if not valid:
-                continue
-#增加一个判断策略    过滤的网页个数
-            
-            if link in self.old_url_queue:
-                num_url_abandon += 1
-                continue
-            else:
-                self.old_url_queue.append(link)
-                if len(self.old_url_queue) >= self.old_url_queue_len:
-                    self.old_url_queue.pop(0)
-                new_url_list.append(link)  #如果合法压入暂时的表中
-        print('abandon url num: %d  old_url_queue_num: %d  new_url_list:%d'%(num_url_abandon,len(self.old_url_queue),len(new_url_list)), file = sys.stderr)
+                continue 
+            new_url_list.append(link)  #如果合法压入暂时的表中
+        print("    new_url_list num :%d" %len(new_url_list))
         link_num = 0
-        cricle_num = 0
         lock.acquire()
         for link in new_url_list:#new_url_list中的每个link
             time5 = time.time()
-            url_visited = check_key(self.url_db_dir, link)
+            bloom_url_visited = link in self.bf #是否存在于bloom中
             time6 = time.time()
-            cricle_num += 1
-            if url_visited:#如果url_db_dir中存在，说明不用存储的了
+            if bloom_url_visited:#如果url_db_dir中存在，说明不用存储的了
                 continue
+            self.bf.add(link)  #新的url存入Bloom
             key = bytes(link, encoding = 'utf-8')
-            add_kv(self.url_db_dir, key, b'')
+            add_kv(self.url_db_dir, key, b'')  #新的url存入数据库
             if len(self.url_queue) < self.queue_max_size:
                 self.url_queue.append(link)#压入队列
                 link_num += 1
@@ -306,24 +300,11 @@ class MiniSpider:
         lock.release()
         return link_num
 
-    def get_url_log(self,time_intervel):
-        lock.acquire()
-        if int(time.time()) - self.time_initial >= time_intervel:
-            self.time_initial = int(time.time())
-            fp = open('%s.log' % self.url_db_dir, 'a')
-            t = time.ctime(time.time())
-            fp.write('[%s] %s %s\n' % (t,str(self.url_num),str(self.url_num - self.url_num_last)))
-            self.url_num_last = self.url_num
-            fp.close()
-            lock.release()
-            return True
-        lock.release()
-        return False
-
     def thread_work(self, tid):
         while 1:
             time_1 = time.time()
-            print('info: t%d, url_num=%d, queue_size=%d, file_size=%d' % (tid, self.url_num, len(self.url_queue), self.file_len_total), file = sys.stderr)
+            time_1_date = time.ctime(time_1)
+            print('[%s] info: t%d, url_num=%d, queue_size=%d, file_size=%d' % (time_1_date,tid, self.url_num, len(self.url_queue), self.file_len_total), file = sys.stderr)
             url = self.pop_url()  #取队列数据
             print('t%d, pop_url %s  ,time %f' % (tid, url,time.time() - time_1), file = sys.stderr) #输出到file文件中
             if url == '':#如果url为空，则认为线程退出了
@@ -337,7 +318,7 @@ class MiniSpider:
                 continue
         
             time_3 = time.time()
-            b_save = self.check_save(url)#存储网页
+            b_save = self.check_save(url)#存储网页，检查网页是否为想要的
             print('t%d, check_save %s, valid=%d time %f' % (tid, url, b_save , time.time() - time_3), file = sys.stderr)
             if b_save:
                 len_save = self.save_url(url, page)
@@ -352,7 +333,11 @@ class MiniSpider:
             if self.file_len_total > self.file_max_size:
                 print('warning: file size exceed %d' % self.file_len_total, file = sys.stderr)
                 break
+            time_5 = time.time()
             time.sleep(random.randint(0, 5) * self.time_sleep)#随机sleep0-5个self_sleep的时间
+            time_6 = time.time()
+            time_6_date = time.ctime(time_6)
+            print('[%s] t%d,sleep time %f' %(time_6_date,tid, time_6 - time_5) )
 
     def run(self):
         threads = []
