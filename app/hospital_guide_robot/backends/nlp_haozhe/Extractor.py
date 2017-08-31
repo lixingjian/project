@@ -11,7 +11,6 @@ LEXICON_PATH = '/Users/Herman/Documents/BOE/project.git/app/hospital_guide_robot
 from pyltp import Segmentor
 from pyltp import Postagger
 from pyltp import Parser
-#from Match import Match
 
 class Extractor:
     def __init__(self):
@@ -30,7 +29,6 @@ class Extractor:
         self.problem_list = self.load_list('problem_nlp')
         self.feeling_list = self.load_list('feeling_nlp')
         self.severity_dict = self.load_dict('severity_nlp')
-        # self.symp_list = self.load_list('symp_nlp')
         self.suddenness_dict = self.load_dict('suddenness_nlp')
         self.frequency_dict = self.load_dict('frequency_nlp')
         self.time_dict = self.load_dict('time_nlp')
@@ -66,9 +64,6 @@ class Extractor:
         return tuples
 
     def extract_dict(self, description):
-        #matcher = Match()
-        #synDict = matcher.createSynDict('syn1.txt', 'symp_nlp')
-        #description = matcher.replaceSyn(description, synDict)
         print(description)
         words = self.segmentor.segment(description)
         postags = self.postagger.postag(words)
@@ -118,6 +113,8 @@ class Extractor:
     def del_extra(self, tuples):
         copy = []
         for ele in tuples:
+            if ele == None:
+                continue
             if len(ele[4]) == 0:
                 continue
             if ele[4][0].find('_') >= 0:
@@ -177,45 +174,28 @@ class Extractor:
             # Get indicator
             elif words[i] in self.indicator_list and not ('I_' + words[i]) in indicator:
                 indicator.append('I_' + words[i])
-            #elif words[i] in self.problem_list and not ('P_' + words[i]) in problem:
-                #problem.append('P_' + words[i])
-            # Get severity
-            elif words[i] in self.severity_dict:
-                severity = max(int(self.severity_dict.get(words[i])), severity)
-            # Get suddenness
-            elif words[i] in self.suddenness_dict:
-                suddenness = int(self.suddenness_dict.get(words[i]))
-            # Get frequency
-            elif words[i] in self.frequency_dict:
-                frequency = int(self.frequency_dict.get(words[i]))
-            # Get problems that are not part of the actual symptom
             # 处理有否定含义的信息
             elif words[i] in self.negative_list:
                 self.find_not_included(list(words), i, words[i], arcs, not_included)
-            elif words[i] in self.disease_list:
-                pass
             elif words[i] in self.time_dict:
                 time = max(int(self.time_dict.get(words[i])), time)
 
-        for each in description:
-            if each in self.severity_dict:
-                severity = int(self.severity_dict.get(each))
-                
-        # Get the problems
-        temp_problem = self.find_problem(words, arcs, num)
-        for ele in temp_problem:
-            if  ele in problem or ('P_' + ele) in problem:
-                continue
-            if ele in self.problem_list:
-                problem.append('P_' + ele)
-            else:
-                problem.append(ele)
+        #for each in description:
+            #if each in self.severity_dict:
+                #severity = int(self.severity_dict.get(each))
+
+        problem.append(self.find_problem(words, arcs, num))
+        form = self.find_form(words, arcs, num)
+        severity = self.find_severity(words, arcs, num)
+        frequency = self.find_frequency(words, arcs, num)
+        suddenness = self.find_suddenness(words, arcs, num)
 
         head_index = self.find_head_index(arcs)
         # Remove the duplicates
         for ele in not_included:
-            if ele in problem: #and words[head_index] != ele:
+            if ele in problem: 
                 problem.remove(ele)
+                return None
             if ele in organs:
                 index = organs.index(ele)
                 location.remove(location[index])
@@ -225,30 +205,25 @@ class Extractor:
             if ele in indicator:
                 indicator.remove(ele)
 
-        temp_form = self.find_form(words, arcs, num)
-        for ele in temp_form:
-            form.append(ele)
-        for ele in temp_form:
-            for each in location:
-                if ele in each or ('L_' + ele) in each:
-                    form.remove(ele)
-        
         history = self.find_disease(description, 'history_nlp')
         suspect = self.find_disease(description, 'suspect_nlp')
         eliminate = self.find_disease(description, 'eliminate_nlp')
 
-        """
-        to_remove = ''
+        delete = False
         for ele in history:
-            for another in eliminate:
-                if ele == another:
-                    to_remove = ele
-        if to_remove != '':
-            suspect.append(to_remove)
-            history.remove(to_remove)
-            eliminate.remove(to_remove)
-        """
+            if ele.find(problem[0]) >= 0 or problem[0].find(ele) >= 0:
+                delete = True
 
+        for ele in suspect:
+            if ele.find(problem[0]) >= 0 or problem[0].find(ele) >= 0:
+                delete = True
+
+        for ele in eliminate:
+            if ele.find(problem[0]) >= 0 or problem[0].find(ele) >= 0:
+                delete = True
+
+        if delete:
+            problem = []
         # Formatting the output of tuple
         res = self.format_tuple(res, organs, 'Organ')
         res = self.format_tuple(res, location, 'Location')
@@ -294,45 +269,114 @@ class Extractor:
                 children.append((words[k], k))
             k += 1
         return children
+    
+    def find_suddenness(self, words, arcs, num):
+        suddenness = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
 
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.suddenness_dict:
+                suddenness = int(self.suddenness_dict.get(child))
+
+        return suddenness
+
+    def find_frequency(self, words, arcs, num):
+        frequency = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
+
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.frequency_dict:
+                frequency = int(self.frequency_dict.get(child))
+
+        return frequency
+
+    def find_severity(self, words, arcs, num):
+        severity = -1
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
+
+            if j == num:
+                head = k
+                break
+            k +=1
+
+        children = self.find_children(words, head, words[head], arcs)
+        for child, index in children:
+            if child in self.severity_dict:
+                severity = int(self.severity_dict.get(child))
+
+        return severity
+
+    # Method to find form of the problem
     def find_form(self, words, arcs, num):
         form = []
-        head_index = self.find_head_index(arcs)
-        if num == 0:
-            children = self.find_children(words, head_index, words[head_index], arcs)
-            for child, index in children:
-                if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                    if not child in self.form_temp and not child in self.location_list:
-                        form.append(child)
-                        self.form_temp.append(child)
+        j = -1
+        k = 0
+        temp = []
+        head = 0
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                j += 1
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                j += 1
 
-        elif num <= self.find_num_of_COO(words, arcs):
-            j = 0
-            k = 0
-            for arc in arcs:
-                if arc.head == head_index + 1 and arc.relation == 'COO':
-                    j += 1
-                    if j == num:
-                        children = self.find_children(words, k, words[k], arcs)
-                        for child, index in children:
-                            if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOB':
-                                if not child in self.form_temp and not child in self.location_list:
-                                    form.append(child)
-                                    self.form_temp.append(child)
-                k += 1
+            if j == num:
+                head = k
+                break
+            k += 1
 
-        else:
-            for i in range(len(words)):
-                if not arcs[i].head == head_index:
-                    if words[i] in self.problem_list or words[i] in self.feeling_list:
-                        children = self.find_children(words, i, words[i], arcs)
-                        for child, index in children:
-                            if arcs[index].relation == 'ADV' or arcs[index].relation == 'VOC':
-                                if not child in self.form_temp and not child in self.location_list:
-                                    form.append(child)
-                                    self.form_temp.append(child)
+        children = self.find_children(words, k, words[k], arcs)
+        for child, index in children:
+            if arcs[index].relation =='ADV' or arcs[index].relation == 'VOB' or arcs[index].relation =='CMP':
+                if not child in self.form_temp and not child in self.location_list:
+                    form.append(child)
+                    self.form_temp.append(child)
 
         return form
+
 
 
     # 处理否定含义的信息 
@@ -417,14 +461,11 @@ class Extractor:
                 if words[head_val - 1] in self.location_list:
                     location.append('L_' + words[head_val - 1])
                 elif arc.relation == 'ATT':
-                    location.append(words[head_val - 1])
                     j = 0
                     for arc2 in arcs:
                         if arc2.head == head_val and arc2.relation == 'COO':
                             if words[j] in self.location_list:
                                 location.append('L_' + words[j])
-                            else:
-                                location.append(words[j])
                         j += 1
             k += 1
         return location
@@ -432,56 +473,15 @@ class Extractor:
     # Find the words that describe problem
     def find_problem(self, words, arcs, num):
         problem = []
-        head_index = self.find_head_index(arcs)
-        if num == 0:
-            # Add head to the list
-            if words[head_index] in self.feeling_list and not words[head_index] in self.prob_temp:
-                problem.append('F_' + words[head_index])
-                self.prob_temp.append(words[head_index])
-            elif words[head_index] in self.problem_list and not words[head_index] in self.prob_temp:
-                problem.append('P_' + words[head_index])
-                self.prob_temp.append(words[head_index])
-            elif not words[head_index] in self.prob_temp:
-                problem.append(words[head_index])
-                self.prob_temp.append(words[head_index])
-
-        else:
-            # Add the corresponding COO words of head to the list
-            j = 0
-            k = 0
-            found_COO = False
-            for arc in arcs:
-                if arc.head == head_index + 1 and arc.relation == 'COO':
-                    j += 1
-                    if j == num:
-                        if words[k] in self.feeling_list and not words[k] in self.prob_temp:
-                            problem.append('F_' + words[k])
-                            self.prob_temp.append(words[k])
-                            found_COO = True
-                            break
-                        elif words[k] in self.problem_list and not words[k] in self.prob_temp:
-                            problem.append('P_' + words[k])
-                            self.prob_temp.append(words[k])
-                            found_COO = True
-                            break
-                        elif not words[k] in self.prob_temp:
-                            problem.append(words[k])
-                            self.prob_temp.append(words[k])
-                            found_COO = True
-                            break
-                        else:
-                            return problem
-                k += 1
-            
-            if not found_COO:
-                for word in words:
-                    if word in self.problem_list and not word in self.in_prob_list and not word in self.prob_temp:
-                        self.in_prob_list.append(word)
-
-                index = num - j - 1
-                problem.append('P_' + self.in_prob_list[index])
-
-        return problem
+        temp = []
+        for word in words:
+            if word in self.problem_list and not word in temp:
+                temp.append(word)
+                problem.append('P_' + word)
+            elif word in self.feeling_list and not word in temp:
+                temp.append(word)
+                problem.append('F_' + word)
+        return problem[num]
 
     def find_disease(self, description, input_file):
         for punc in [u'。',' ',u'！',u'？',u'；',u'：',',','.','?','!']:
@@ -510,35 +510,12 @@ class Extractor:
         return subject
 
     def find_num_of_tuple(self, words, arcs):
-        head_index = self.find_head_index(arcs)
         temp = []
-        temp.append(words[head_index])
-        j = 1
-        k = 0
-        for arc in arcs:
-            if arc.head == head_index + 1 and arc.relation == 'COO':
-                if not words[k] in self.problem_list and not words[k] in temp: 
-                    temp.append(words[k])
-                    j += 1
-            k += 1
-
-        for word in words:
-            if word in self.problem_list and not word in temp:
-                temp.append(word)
-                j += 1
-
-        return j
-
-    def find_num_of_COO(self, words, arcs):
-        head_index = self.find_head_index(arcs)
-        temp = []
-        temp.append(words[head_index])
         j = 0
-        k = 0
-        for arc in arcs:
-            if arc.head == head_index + 1 and arc.relation == 'COO':
-                if not words[k] in self.problem_list and not words[k] in temp: 
-                    temp.append(words[k])
+        for word in words:
+            if word in self.problem_list or word in self.feeling_list:
+                if not word in temp:
+                    temp.append(word)
                     j += 1
         return j
 
@@ -587,7 +564,7 @@ if __name__ == '__main__':
     else:
         f = codecs.open('symptom_input.txt', 'r', 'utf-8')
         for line in f.readlines():
-            res = extractor.extract(line)
+            res = extractor.extract_dict(line)
             for ele in res:
                 print(ele)
                 print()
