@@ -2,10 +2,18 @@
 
 import codecs
 import os
-LTP_DATA_DIR = '/Users/Herman/Documents/BOE/pyltp/ltp_data'
+
+"""
+Visit http://pyltp.readthedocs.io/zh_CN/latest/api.html
+Download the model needed for pylty to run correctly
+Remember to change the directories below to where you put the downloaded files
+"""
+
+LTP_DATA_DIR = '/Users/Herman/Documents/BOE/pyltp/ltp_data' # Modify this dir
 cws_model_path = os.path.join(LTP_DATA_DIR, 'cws.model')
 pos_model_path = os.path.join(LTP_DATA_DIR, 'pos.model')
 par_model_path = os.path.join(LTP_DATA_DIR, 'parser.model')
+# Modify this dir to where all_nlp is
 LEXICON_PATH = '/Users/Herman/Documents/BOE/project.git/app/hospital_guide_robot/backends/nlp_haozhe/all_nlp'
 
 from pyltp import Segmentor
@@ -37,12 +45,15 @@ class Extractor:
         self.prob_temp = []
         self.form_temp = []
         self.in_prob_list = []
-
+    
+    # This method resets the temp variables, so as to ensure the accuracy of the
+    # results extracted
     def reset(self):
         self.prob_temp = []
         self.form_temp = []
         self.in_prob_list = []
 
+    # Extract keywords and return a tuple
     def extract_tuple(self, description):
         print(description)
         words = self.segmentor.segment(description)
@@ -63,6 +74,7 @@ class Extractor:
 
         return tuples
 
+    # Extract keywords and return a dict
     def extract_dict(self, description):
         print(description)
         words = self.segmentor.segment(description)
@@ -88,6 +100,7 @@ class Extractor:
 
         return final
 
+    # Helper method to change a tuple to a dict
     def change_tuple_to_dict(self, in_tuple):
         result = {}
         result['Organ'] = in_tuple[0]
@@ -121,7 +134,9 @@ class Extractor:
                 copy.append(ele)
         return copy
 
-
+    # This is the most important method in this class
+    # It constructs a tuple with the necessary information extracted from the
+    # description of a patient
     def construct_tuple(self, description, num):
         """
         Tuple格式如下：
@@ -177,12 +192,9 @@ class Extractor:
             # 处理有否定含义的信息
             elif words[i] in self.negative_list:
                 self.find_not_included(list(words), i, words[i], arcs, not_included)
+            # Get time
             elif words[i] in self.time_dict:
                 time = max(int(self.time_dict.get(words[i])), time)
-
-        #for each in description:
-            #if each in self.severity_dict:
-                #severity = int(self.severity_dict.get(each))
 
         problem.append(self.find_problem(words, arcs, num))
         form = self.find_form(words, arcs, num)
@@ -190,7 +202,6 @@ class Extractor:
         frequency = self.find_frequency(words, arcs, num)
         suddenness = self.find_suddenness(words, arcs, num)
 
-        head_index = self.find_head_index(arcs)
         # Remove the duplicates
         for ele in not_included:
             if ele in problem: 
@@ -209,6 +220,7 @@ class Extractor:
         suspect = self.find_disease(description, 'suspect_nlp')
         eliminate = self.find_disease(description, 'eliminate_nlp')
 
+        # Delete the problems that also appear in other components of the tuple
         delete = False
         for ele in history:
             if ele.find(problem[0]) >= 0 or problem[0].find(ele) >= 0:
@@ -224,6 +236,7 @@ class Extractor:
 
         if delete:
             problem = []
+
         # Formatting the output of tuple
         res = self.format_tuple(res, organs, 'Organ')
         res = self.format_tuple(res, location, 'Location')
@@ -240,6 +253,8 @@ class Extractor:
         res = self.format_tuple(res, eliminate, 'Eliminate')
         return res
 
+    # This method is created for debugging purpose
+    # Uncomment the if-else loop to print out 'XXXX list is empty'
     def format_tuple(self, res, in_list, name):
         #if len(in_list) == 0:
         #    res += ([ name + ' list is empty'],)
@@ -269,13 +284,16 @@ class Extractor:
                 children.append((words[k], k))
             k += 1
         return children
-    
+
+    # Method to find the suddenness component 
     def find_suddenness(self, words, arcs, num):
         suddenness = -1
         j = -1
         k = 0
         temp = []
         head = 0
+        # Add all problems/feelings to temp and find the current one using the
+        # parameter 'num'
         for word in words:
             if word in self.problem_list and not word in temp:
                 temp.append(word)
@@ -284,11 +302,13 @@ class Extractor:
                 temp.append(word)
                 j += 1
 
+            # Find head of the current problem
             if j == num:
                 head = k
                 break
             k +=1
 
+        # Find all its children and find the word in suddenness_dict
         children = self.find_children(words, head, words[head], arcs)
         for child, index in children:
             if child in self.suddenness_dict:
@@ -296,6 +316,8 @@ class Extractor:
 
         return suddenness
 
+    # Similar method as find_suddenness, with the sole difference that the
+    # output is the frequency.
     def find_frequency(self, words, arcs, num):
         frequency = -1
         j = -1
@@ -322,6 +344,8 @@ class Extractor:
 
         return frequency
 
+    # Similar method as find_suddenness, with the sole difference that the ouput
+    # is the severity.
     def find_severity(self, words, arcs, num):
         severity = -1
         j = -1
