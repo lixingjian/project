@@ -583,6 +583,7 @@ if __name__ == '__main__':
                 print(ele)
                 print()
             i += 1
+            # REMEMBER to reset after extracting keywords from a sentence
             extractor.reset()
         extractor.release()
     else:
