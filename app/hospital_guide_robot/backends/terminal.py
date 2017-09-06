@@ -1,6 +1,6 @@
 import sys, os, json, random
 import copy
-from predict_disease import Diagnosis  
+from predict_linear import Diagnosis  
 from se_search import Searching 
 from chatter_bot import ChatterBot
 
@@ -19,7 +19,8 @@ request_template = {
         } 
     }        
 response_template = {
-        'text' : '', #string, server返回的文字内容 
+        'text' : '', #string, APP屏幕显示的文字内容 
+        'pic' : '', #string，APP语音输出的内容
         'type' : 0,  #int, [0, 255] 回复类型：0：聊天回复，1：指南回复，2：分诊回复，3：分诊交互
         'wei' : 0,  #float, [0, 1] 回复置信度
         'time' : 0  #int, server返回的请求时间
@@ -36,7 +37,9 @@ class Terminal:
         wei_list = [0, 1, 1]
         if (q.find('挂') > 0 or q.find('看') > 0) and q.find('科') > 0:
             wei_list = [1, 0, 0]
-        if q.find('我想') > 0 or q.find('我要') > 0 or q.find('在哪') > 0 or q.find('怎么走') > 0:
+        if q.find('我想') >= 0 or q.find('我要') >= 0 or q.find('上哪') >= 0 or q.find('在哪') > 0 or q.find('怎么走') > 0:
+            wei_list = [0, 1, 0]
+        if q.find('我') >= 0 and q.find('来') > 0:
             wei_list = [0, 1, 0]
         return wei_list
 
@@ -66,6 +69,9 @@ class Terminal:
             print(res)
 
         response = sorted(candidates, key=lambda d:d['wei'], reverse=True)[0]
+        if response['text'].startswith('LOC_'):
+             response['pic'] =  response['text']
+
         if len(self.history[uid]) > 3:    
             self.history[uid].pop(0)
         self.history[uid][-1][1] = response
