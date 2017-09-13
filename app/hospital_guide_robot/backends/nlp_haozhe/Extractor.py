@@ -35,7 +35,6 @@ class Extractor:
         self.tissue_list = self.load_list('tissue_nlp')
         self.indicator_list = self.load_list('indicator_nlp')
         self.problem_list = self.load_list('problem_nlp')
-        self.feeling_list = self.load_list('feeling_nlp')
         self.severity_dict = self.load_dict('severity_nlp')
         self.suddenness_dict = self.load_dict('suddenness_nlp')
         self.frequency_dict = self.load_dict('frequency_nlp')
@@ -292,13 +291,10 @@ class Extractor:
         k = 0
         temp = []
         head = 0
-        # Add all problems/feelings to temp and find the current one using the
+        # Add all problems to temp and find the current one using the
         # parameter 'num'
         for word in words:
             if word in self.problem_list and not word in temp:
-                temp.append(word)
-                j += 1
-            elif word in self.feeling_list and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -328,9 +324,6 @@ class Extractor:
             if word in self.problem_list and not word in temp:
                 temp.append(word)
                 j += 1
-            elif word in self.feeling_list and not word in temp:
-                temp.append(word)
-                j += 1
 
             if j == num:
                 head = k
@@ -356,9 +349,6 @@ class Extractor:
             if word in self.problem_list and not word in temp:
                 temp.append(word)
                 j += 1
-            elif word in self.feeling_list and not word in temp:
-                temp.append(word)
-                j += 1
 
             if j == num:
                 head = k
@@ -381,9 +371,6 @@ class Extractor:
         head = 0
         for word in words:
             if word in self.problem_list and not word in temp:
-                temp.append(word)
-                j += 1
-            elif word in self.feeling_list and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -439,8 +426,6 @@ class Extractor:
                     not_included.append('T_' + curr)
                 elif curr in self.indicator_list:
                     not_included.append('I_' + curr)
-                elif curr in self.feeling_list:
-                    not_included.append('F_' + curr)
                 elif curr in self.problem_list:
                     not_included.append('P_' + curr)
                 else:
@@ -461,8 +446,6 @@ class Extractor:
                     not_included.append('T_' + child)
                 elif child in self.indicator_list:
                     not_included.append('I_' + child)
-                elif child in self.feeling_list:
-                    not_included.append('F_' + child)
                 elif child in self.problem_list:
                     not_included.append('P_' + child)
                 else:
@@ -502,9 +485,6 @@ class Extractor:
             if word in self.problem_list and not word in temp:
                 temp.append(word)
                 problem.append('P_' + word)
-            elif word in self.feeling_list and not word in temp:
-                temp.append(word)
-                problem.append('F_' + word)
         return problem[num]
 
     def find_disease(self, description, input_file):
@@ -537,7 +517,7 @@ class Extractor:
         temp = []
         j = 0
         for word in words:
-            if word in self.problem_list or word in self.feeling_list:
+            if word in self.problem_list:
                 if not word in temp:
                     temp.append(word)
                     j += 1
