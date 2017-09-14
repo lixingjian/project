@@ -30,21 +30,31 @@ class Extractor:
         self.parser.load(par_model_path)
 
         # Load all lists with the input files
-        self.organ_list = self.load_list('organ_nlp')
+        self.organ_id_dict = self.create_id_dict('organ_nlp')
+        self.organ_word_dict = self.create_word_dict('organ_nlp')
         self.location_list = self.load_list('location_nlp')
-        self.tissue_list = self.load_list('tissue_nlp')
-        self.indicator_list = self.load_list('indicator_nlp')
-        self.problem_list = self.load_list('problem_nlp')
+        self.tissue_id_dict = self.create_id_dict('tissue_nlp')
+        self.tissue_word_dict = self.create_word_dict('tissue_nlp')
+        self.indicator_id_dict = self.create_id_dict('indicator_nlp')
+        self.indicator_word_dict = self.create_word_dict('indicator_nlp')
+        self.nutrition_list = self.load_list('nutrition_nlp')
+        self.problem_id_dict = self.create_id_dict('problem_nlp')
+        self.problem_word_dict = self.create_word_dict('problem_nlp')
         self.severity_dict = self.load_dict('severity_nlp')
         self.suddenness_dict = self.load_dict('suddenness_nlp')
         self.frequency_dict = self.load_dict('frequency_nlp')
         self.time_dict = self.load_dict('time_nlp')
         self.disease_list = self.load_list('disease_nlp')
         self.negative_list = self.load_list('negative_nlp')
+        self.appearance_id_dict = self.create_id_dict('appearance_nlp')
+        self.appearance_word_dict = self.create_word_dict('appearance_nlp')
+        self.nutrition_list = self.load_list('nutrition_nlp')
+        self.function_id_dict = self.create_id_dict('function_nlp')
+        self.function_word_dict = self.create_word_dict('function_nlp')
         self.prob_temp = []
         self.form_temp = []
         self.in_prob_list = []
-    
+
     # This method resets the temp variables, so as to ensure the accuracy of the
     # results extracted
     def reset(self):
@@ -61,7 +71,7 @@ class Extractor:
 
         print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
         print('\t'.join(word for word in list(words)))
-        print ("\t".join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
 
         num_of_tuple = self.find_num_of_tuple(words, arcs)
         tuples = []
@@ -70,6 +80,24 @@ class Extractor:
             tuples.append(self.construct_tuple(description, num))
 
         tuples = self.del_extra(tuples)
+
+        return tuples
+
+    def extract_simple_tuple(self, description):
+        words = self.segmentor.segment(description)
+        postags = self.postagger.postag(words)
+        arcs = self.parser.parse(words, postags)
+        
+        
+        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        print('\t'.join(word for word in list(words)))
+        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        
+        num_of_tuple = self.find_num_of_tuple(words, arcs)
+        tuples = []
+
+        for num in range(num_of_tuple):
+            tuples.append(self.construct_simple_tuple(description, num))
 
         return tuples
 
@@ -82,7 +110,7 @@ class Extractor:
 
         print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
         print('\t'.join(word for word in list(words)))
-        print ("\t".join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
 
         num_of_tuple = self.find_num_of_tuple(words, arcs)
         tuples = []
@@ -119,6 +147,9 @@ class Extractor:
         result['History'] = in_tuple[14]
         result['Suspect'] = in_tuple[15]
         result['Eliminate'] = in_tuple[16]
+        result['Appearance'] = in_tuple[17]
+        result['Nutrition'] = in_tuple[18]
+        result['Function'] = in_tuple[19]
         return result
 
     # 用词典过滤多余词条
@@ -173,27 +204,53 @@ class Extractor:
         history = []
         suspect = []
         eliminate = []
+        appearance = []
+        nutrition = []
+        function = []
 
         # Iterate through every single word
         for i in range(len(words)):
             # Get organs and their locations
-            if words[i] in self.organ_list:
-                if not ('O_' + words[i]) in organs:
-                    organs.append('O_' + words[i])
+            if words[i] in self.organ_word_dict.keys():
+                id_val = self.organ_word_dict.get(words[i])
+                word = self.organ_id_dict.get(id_val)
+                if not ('O_' + word) in organs:
+                    organs.append('O_' + word)
                     temp_location = self.find_location(words, arcs, i)
                     location.append(temp_location)
             # Get tissue
-            elif words[i] in self.tissue_list and not ('T_' + words[i]) in tissue:
-                tissue.append('T_' + words[i])
+            elif words[i] in self.tissue_word_dict.keys():
+                id_val = self.tissue_word_dict.get(words[i])
+                word = self.tissue_id_dict.get(id_val)
+                if not ('T_' + word) in tissue:
+                    tissue.append('T_' + word)
             # Get indicator
-            elif words[i] in self.indicator_list and not ('I_' + words[i]) in indicator:
-                indicator.append('I_' + words[i])
+            elif words[i] in self.indicator_word_dict.keys():
+                id_val = self.indicator_word_dict.get(words[i])
+                word = self.indicator_id_dict.get(id_val)
+                if not ('I_' + word) in indicator:
+                    indicator.append('I_' + word)
+            # Get appearance
+            elif words[i] in self.appearance_word_dict.keys():
+                id_val = self.appearance_word_dict.get(words[i])
+                word = self.appearance_id_dict.get(id_val)
+                if not ('A_' + word) in appearance:
+                    appearance.append('A_' + word)
             # 处理有否定含义的信息
             elif words[i] in self.negative_list:
                 self.find_not_included(list(words), i, words[i], arcs, not_included)
             # Get time
             elif words[i] in self.time_dict:
                 time = max(int(self.time_dict.get(words[i])), time)
+            # Get nutrition
+            elif words[i] in self.nutrition_list and not words[i] in nutrition:
+                nutrition.append('N_' + words[i])
+            # Get function
+            elif words[i] in self.function_word_dict.keys():
+                id_val = self.function_word_dict.get(words[i])
+                word = self.function_id_dict.get(id_val)
+                if not ('F_' + word) in function:
+                    function.append('F_' + word)
 
         problem.append(self.find_problem(words, arcs, num))
         form = self.find_form(words, arcs, num)
@@ -250,6 +307,73 @@ class Extractor:
         res = self.format_tuple(res, history, 'History')
         res = self.format_tuple(res, suspect, 'Suspect')
         res = self.format_tuple(res, eliminate, 'Eliminate')
+        res = self.format_tuple(res, appearance, 'Appearance')
+        res = self.format_tuple(res, nutrition, 'Nutrition')
+        res = self.format_tuple(res, function, 'Function')
+        return res
+
+    # A simple version of construct_tuple, only obtaining the key features
+    def construct_simple_tuple(self, description, num):
+        res = ()
+        words = self.segmentor.segment(description)
+        postags = self.postagger.postag(words)
+        arcs = self.parser.parse(words, postags)
+
+        # Initialize all elements in the tuple
+        organs = []
+        tissue = []
+        indicator = []
+        problem = []
+        appearance = []
+        nutrition = []
+        function = []
+
+        # Iterate through every single word
+        for i in range(len(words)):
+            # Get organs and their locations
+            if words[i] in self.organ_word_dict.keys():
+                id_val = self.organ_word_dict.get(words[i])
+                word = self.organ_id_dict.get(id_val)
+                if not ('O_' + word) in organs:
+                    organs.append('O_' + word)
+            # Get tissue
+            elif words[i] in self.tissue_word_dict.keys():
+                id_val = self.tissue_word_dict.get(words[i])
+                word = self.tissue_id_dict.get(id_val)
+                if not ('T_' + word) in tissue:
+                    tissue.append('T_' + word)
+            # Get indicator
+            elif words[i] in self.indicator_word_dict.keys():
+                id_val = self.indicator_word_dict.get(words[i])
+                word = self.indicator_id_dict.get(id_val)
+                if not ('I_' + word) in indicator:
+                    indicator.append('I_' + word)
+            # Get appearance
+            elif words[i] in self.appearance_word_dict.keys():
+                id_val = self.appearance_word_dict.get(words[i])
+                word = self.appearance_id_dict.get(id_val)
+                if not ('A_' + word) in appearance:
+                    appearance.append('A_' + word)
+            # Get nutrition
+            elif words[i] in self.nutrition_list and not words[i] in nutrition:
+                nutrition.append(words[i])
+            # Get function
+            elif words[i] in self.function_word_dict.keys():
+                id_val = self.function_word_dict.get(words[i])
+                word = self.function_id_dict.get(id_val)
+                if not ('F_' + word) in function:
+                    function.append('F_' + word)
+
+        problem.append(self.find_problem(words, arcs, num))
+
+        # Formatting the output of tuple
+        res = self.format_tuple(res, tuple(organs), 'Organ')
+        res = self.format_tuple(res, tuple(tissue), 'Tissue')
+        res = self.format_tuple(res, tuple(indicator), 'Indicator')
+        res = self.format_tuple(res, tuple(problem), 'Problem')
+        res = self.format_tuple(res, tuple(appearance), 'Appearance')
+        res = self.format_tuple(res, tuple(nutrition), 'Nutrition')
+        res = self.format_tuple(res, tuple(function), 'Function')
         return res
 
     # This method is created for debugging purpose
@@ -294,7 +418,7 @@ class Extractor:
         # Add all problems to temp and find the current one using the
         # parameter 'num'
         for word in words:
-            if word in self.problem_list and not word in temp:
+            if word in self.problem_word_dict.keys() and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -321,7 +445,7 @@ class Extractor:
         temp = []
         head = 0
         for word in words:
-            if word in self.problem_list and not word in temp:
+            if word in self.problem_word_dict.keys() and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -346,7 +470,7 @@ class Extractor:
         temp = []
         head = 0
         for word in words:
-            if word in self.problem_list and not word in temp:
+            if word in self.problem_word_dict.keys() and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -370,7 +494,7 @@ class Extractor:
         temp = []
         head = 0
         for word in words:
-            if word in self.problem_list and not word in temp:
+            if word in self.problem_word_dict.keys() and not word in temp:
                 temp.append(word)
                 j += 1
 
@@ -418,15 +542,15 @@ class Extractor:
             if arcs[arcs[i].head - 1].head != 0:
                 curr = words[arcs[i].head - 1]
                 temp1.append(curr)
-                if curr in self.organ_list:
+                if curr in self.organ_word_dict.keys():
                     not_included.append('O_' + curr)
                 elif curr in self.location_list:
                     not_included.append('L_' + curr)
-                elif curr in self.tissue_list:
+                elif curr in self.tissue_word_dict.keys():
                     not_included.append('T_' + curr)
-                elif curr in self.indicator_list:
+                elif curr in self.indicator_word_dict.keys():
                     not_included.append('I_' + curr)
-                elif curr in self.problem_list:
+                elif curr in self.problem_word_dict.keys():
                     not_included.append('P_' + curr)
                 else:
                     not_included.append(curr)
@@ -438,15 +562,15 @@ class Extractor:
             #if arcs[index].relation == 'ADV':
                 #continue
             if not child in temp2 and child != '不':
-                if child in self.organ_list:
+                if child in self.organ_word_dict.keys():
                     not_included.append('O_' + child)
                 elif child in self.location_list:
                     not_included.append('L_' + child)
-                elif child in self.tissue_list:
+                elif child in self.tissue_word_dict.keys():
                     not_included.append('T_' + child)
-                elif child in self.indicator_list:
+                elif child in self.indicator_word_dict.keys():
                     not_included.append('I_' + child)
-                elif child in self.problem_list:
+                elif child in self.problem_word_dict.keys():
                     not_included.append('P_' + child)
                 else:
                     not_included.append(child)
@@ -482,7 +606,9 @@ class Extractor:
         problem = []
         temp = []
         for word in words:
-            if word in self.problem_list and not word in temp:
+            if word in self.problem_word_dict.keys():
+                id_val = self.problem_word_dict.get(word)
+                word = self.problem_id_dict.get(id_val)
                 temp.append(word)
                 problem.append('P_' + word)
         return problem[num]
@@ -517,7 +643,7 @@ class Extractor:
         temp = []
         j = 0
         for word in words:
-            if word in self.problem_list:
+            if word in self.problem_word_dict.keys():
                 if not word in temp:
                     temp.append(word)
                     j += 1
@@ -531,6 +657,36 @@ class Extractor:
             temp = ele.split()[0].rstrip()
             res_list.append(temp)
         return res_list
+    """
+    def load_list_with_syn(sef, inFile):
+        res_list = []
+        temp_list = codecs.open(inFile, 'r', 'utf-8').readlines()
+        i = 0
+        for ele in temp_list:
+            temp = ele.rstrip().split()
+            for each in temp:
+                res_list.append((each, i)) # each is the word, i is the id
+            i += 1
+        return res_list
+    """
+    def create_id_dict(self, inFile):
+        res_dict = {} # key is id, val is the word
+        temp_list = codecs.open(inFile, 'r', 'utf-8').readlines()
+        i = 0
+        for ele in temp_list:
+            temp = ele.rstrip().split()[0]
+            res_dict[i] = temp
+            i += 1
+        return res_dict
+
+    def create_word_dict(self, inFile):
+        res_dict = {} # key is word, val is id
+        temp_list = codecs.open(inFile, 'r', 'utf-8').readlines()
+        for i in range(len(temp_list)):
+            words = temp_list[i].split()
+            for ele in words:
+                res_dict[ele] = i
+        return res_dict
 
     # Helper method to laod a dictionary from a file
     def load_dict(self, inFile):
