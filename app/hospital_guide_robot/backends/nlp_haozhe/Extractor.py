@@ -2,6 +2,7 @@
 
 import codecs
 import os
+import sys
 
 """
 Visit http://pyltp.readthedocs.io/zh_CN/latest/api.html
@@ -14,6 +15,8 @@ cws_model_path = os.path.join(LTP_DATA_DIR, 'cws.model')
 pos_model_path = os.path.join(LTP_DATA_DIR, 'pos.model')
 par_model_path = os.path.join(LTP_DATA_DIR, 'parser.model')
 # Modify this dir to where all_nlp is
+# You may run createAll.py in a folder with all input nlp files to obtain
+# all_nlp
 LEXICON_PATH = '/Users/Herman/Documents/BOE/project.git/app/hospital_guide_robot/backends/nlp_haozhe/all_nlp'
 
 from pyltp import Segmentor
@@ -32,25 +35,37 @@ class Extractor:
         # Load all lists with the input files
         self.organ_id_dict = self.create_id_dict('organ_nlp')
         self.organ_word_dict = self.create_word_dict('organ_nlp')
+
         self.location_list = self.load_list('location_nlp')
+
         self.tissue_id_dict = self.create_id_dict('tissue_nlp')
         self.tissue_word_dict = self.create_word_dict('tissue_nlp')
+
         self.indicator_id_dict = self.create_id_dict('indicator_nlp')
         self.indicator_word_dict = self.create_word_dict('indicator_nlp')
+
         self.nutrition_list = self.load_list('nutrition_nlp')
+
         self.problem_id_dict = self.create_id_dict('problem_nlp')
         self.problem_word_dict = self.create_word_dict('problem_nlp')
+
         self.severity_dict = self.load_dict('severity_nlp')
         self.suddenness_dict = self.load_dict('suddenness_nlp')
         self.frequency_dict = self.load_dict('frequency_nlp')
         self.time_dict = self.load_dict('time_nlp')
         self.disease_list = self.load_list('disease_nlp')
         self.negative_list = self.load_list('negative_nlp')
+
         self.appearance_id_dict = self.create_id_dict('appearance_nlp')
         self.appearance_word_dict = self.create_word_dict('appearance_nlp')
+
         self.nutrition_list = self.load_list('nutrition_nlp')
+
         self.function_id_dict = self.create_id_dict('function_nlp')
         self.function_word_dict = self.create_word_dict('function_nlp')
+
+        # These temp variables are used in helper methods to prevent duplicated
+        # content from being extracted
         self.prob_temp = []
         self.form_temp = []
         self.in_prob_list = []
@@ -62,16 +77,16 @@ class Extractor:
         self.form_temp = []
         self.in_prob_list = []
 
-    # Extract keywords and return a tuple
+    # Extract all keywords and return a tuple
     def extract_tuple(self, description):
         print(description)
         words = self.segmentor.segment(description)
         postags = self.postagger.postag(words)
         arcs = self.parser.parse(words, postags)
 
-        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        print('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
         print('\t'.join(word for word in list(words)))
-        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        print('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
 
         num_of_tuple = self.find_num_of_tuple(words, arcs)
         tuples = []
@@ -83,16 +98,19 @@ class Extractor:
 
         return tuples
 
+    # Only extract the major components
     def extract_simple_tuple(self, description):
         words = self.segmentor.segment(description)
         postags = self.postagger.postag(words)
         arcs = self.parser.parse(words, postags)
         
-        
-        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        """
+        print('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
         print('\t'.join(word for word in list(words)))
-        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
-        
+        print('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        """
+        #words = description 
+
         num_of_tuple = self.find_num_of_tuple(words, arcs)
         tuples = []
 
@@ -101,16 +119,16 @@ class Extractor:
 
         return tuples
 
-    # Extract keywords and return a dict
+    # Extract all keywords and return a dict
     def extract_dict(self, description):
         print(description)
         words = self.segmentor.segment(description)
         postags = self.postagger.postag(words)
         arcs = self.parser.parse(words, postags)
 
-        print ('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+        print('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
         print('\t'.join(word for word in list(words)))
-        print ('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+        print('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
 
         num_of_tuple = self.find_num_of_tuple(words, arcs)
         tuples = []
@@ -178,7 +196,8 @@ class Extractor:
            int(症状出现频率),     int(症状出现时间),     int(症状持续时间),
             str(起因，暂不填写),     str(加剧因素，暂不填写),
             str(缓解因素，暂不填写),
-             [病史],     [怀疑疾病],     [排除疾病] )
+             [病史],     [怀疑疾病],     [排除疾病] 
+             [表现出的问题（例如疙瘩、臭味等）], [营养], [人体功能])
         """
 
         res = ()
@@ -208,7 +227,7 @@ class Extractor:
         nutrition = []
         function = []
 
-        # Iterate through every single word
+        # Iterate through every single word obtained from ltp methods
         for i in range(len(words)):
             # Get organs and their locations
             if words[i] in self.organ_word_dict.keys():
@@ -294,6 +313,9 @@ class Extractor:
             problem = []
 
         # Formatting the output of tuple
+        # If you are debugging this part, you may want to look for
+        # format_tuple method to uncomment some lines, so that more contents in
+        # the tuple get printed out
         res = self.format_tuple(res, organs, 'Organ')
         res = self.format_tuple(res, location, 'Location')
         res = self.format_tuple(res, tissue, 'Tissue')
@@ -327,8 +349,11 @@ class Extractor:
         appearance = []
         nutrition = []
         function = []
+        
+        # One Chinese char will be one unit here 
+        #words = description
 
-        # Iterate through every single word
+        # Iterate through every single word obtained from ltp
         for i in range(len(words)):
             # Get organs and their locations
             if words[i] in self.organ_word_dict.keys():
@@ -367,6 +392,8 @@ class Extractor:
         problem.append(self.find_problem(words, arcs, num))
 
         # Formatting the output of tuple
+        # All internal lists are converted to a tuple in order to use as keys in
+        # another test
         res = self.format_tuple(res, tuple(organs), 'Organ')
         res = self.format_tuple(res, tuple(tissue), 'Tissue')
         res = self.format_tuple(res, tuple(indicator), 'Indicator')
@@ -519,7 +546,7 @@ class Extractor:
     # ‘不’，‘没有’，‘无’ 等
     def find_not_included(self, words, i, curr_word, arcs, not_included):
         children = self.find_children(words, i, curr_word, arcs)
-        copy = []
+        copy = [] # copy of children 
         for ele in children:
             copy.append(ele)
         for ele, index in copy:
@@ -613,6 +640,7 @@ class Extractor:
                 problem.append('P_' + word)
         return problem[num]
 
+    # Find disease that match one of our recorded disease names from input_file
     def find_disease(self, description, input_file):
         for punc in [u'。',' ',u'！',u'？',u'；',u'：',',','.','?','!']:
             description.replace(punc, '，')
@@ -639,6 +667,7 @@ class Extractor:
             j += 1
         return subject
 
+    # Helper method to determine how many tuple are produced in the end
     def find_num_of_tuple(self, words, arcs):
         temp = []
         j = 0
@@ -704,17 +733,21 @@ class Extractor:
         self.postagger.release()
         self.parser.release()
 
+# Example of how to use Extractor
 if __name__ == '__main__':
     extractor = Extractor()
     i = 0
-    ans = input('Long test or short test? (L or l for long, S or s for short)')
+    print()
+    print('Do you wish to conduct a long test or a short test?')
+    print('Long test will use symptom_input.txt as input to test 100 haodf input, while short test will allow you to test up to 3 input from stdin.')
+    ans = input('Type \'L\' or \'l\' for long, \'S\'or \'s\' for short: ')
     if ans == 'S' or ans == 's':
         while i < 3:
             userInput = input(u'请输入: ')
             if len(userInput) == 0:
                 i += 1
                 continue
-            res = extractor.extract_dict(userInput)
+            res = extractor.extract_simple_tuple(userInput)
             for ele in res:
                 print(ele)
                 print()
@@ -722,7 +755,7 @@ if __name__ == '__main__':
             # REMEMBER to reset after extracting keywords from a sentence
             extractor.reset()
         extractor.release()
-    else:
+    elif ans == 'L' or ans == 'l':
         f = codecs.open('symptom_input.txt', 'r', 'utf-8')
         for line in f.readlines():
             res = extractor.extract_dict(line)
@@ -731,3 +764,6 @@ if __name__ == '__main__':
                 print()
             extractor.reset()
         extractor.release()
+
+    else: 
+        print('Invalid input. Please rerun the program and type l or s.')
