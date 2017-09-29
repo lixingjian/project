@@ -30,4 +30,16 @@ class Frequency:
         self.appearance_match = Match()
         self.appearance_match.load(os.path.join(file_dir,'appearance_nlp'))
 
+        #two dimention dict
+        '''
+            for example:
+                {organ_name:{problem_name:frequency}}
+        '''
+        organ_dict = {}
+        tissue_dict = {}
+        indicator_dict = {}
+        function_dict = {}
+        nutrition_dict = {}
 
+
+    def  
