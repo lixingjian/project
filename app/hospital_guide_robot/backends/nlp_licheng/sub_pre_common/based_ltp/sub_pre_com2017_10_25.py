@@ -46,6 +46,7 @@ class Sub_Pre:
         names['self.%s_dict'%sub_pre_name] = {}
         names['self.%s_dict'%pre_sub_name] = {}
         self.pre_sub_dict = {}
+        self.tid = 0
         self.pre_dict = {}   
         self.sub_dict = {}
     
@@ -115,84 +116,78 @@ class Sub_Pre:
                 print("~EOF:")
                 save_f.close()
 
-    '''
-        
+    def identify_sub_pre(self, sub, pre, des,words,arcs):
+        for sub_word in sub:
+            sub_word_val = sub[sub_word]
+            sub_pre_rela = arcs[sub_word_val - 1].relation
+            if ("SBV" ==  sub_pre_rela or "ATT" == sub_pre_rela) and arcs[sub_word_val - 1].head in pre.keys():
+                res_sub = sub_word
+                res_pre = pre[ arcs[sub_word_val - 1].head ]
+                #print('des:%s' %des)
+                #print('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+                #print('\t'.join(word for word in list(words)))
+                #print('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+                print("*****real sub pre: %s %s*********" %(res_sub, res_pre))
+                sub_pre_name = 'sub_pre'
+                pre_sub_name = 'pre_sub'
+                names['self.%s_dict'%sub_pre_name] = self.add_dicts(res_sub, res_pre, names['self.%s_dict'%sub_pre_name])
+                names['self.%s_dict'%pre_sub_name] = self.add_dicts(res_pre, res_sub, names['self.%s_dict'%pre_sub_name])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '''
-    def identify_words_depend(self,words1_dict,words2_dict,arcs):
-        words_list = {}
-        for word1,index1 in words1_dict.items():
-            depend = arcs[index1].relation
-            head_index = arcs[index1].head - 1
-            for word2,index2 in words2_dict.items():
-                if ("SBV" ==  depend or "ATT" == depend) and head_index in index2:
-                    words_set = [word1,word2]
-                    words_list.append(words_set)
-        return words_list
-    #return dict
-    '''
-        words1_dict = {'word1':index1,'word2':index2,...,'wordn':indexn};
-        words2_dict = {'word1':index1,'word2':index2,...,'wordn':indexn}.
-    '''
-    def find_words_in_dicts(self, words):
-        words1_dict = {}
-        words2_dict = {}
+    def find_sub_pre_in_dict(self, des):
+        words, arcs = ltp_parser.des_parse(des)
+        temp_sub = {} #key is word ,val is index
+        temp_pre = {} #key is index ,val is word
         for i in range(len(words)):
-            #find sub words
             if words[i] in self.sub_word_id_dict.keys():
                 id_val = self.sub_word_id_dict[words[i]]
-                words1_dict[words[i]] = i
-            #find pre words
+                temp_sub[words[i]] = i + 1
+                '''
+                if words[i] in self.sub_dict.keys():
+                    self.sub_dict[words[i]] += 1
+                else:
+                    self.sub_dict[words[i]] = 1
+                '''
+
             if words[i] in self.pre_word_id_dict.keys():
-                words2_dict[words[i]] = i
-        return words1_dict, words2_dict
+                temp_pre[i + 1] = words[i]    #self.pre_id_word_dict[id_val]
+                '''
+                if words[i] in self.pre_dict.keys():
+                    self.pre_dict[words[i]] += 1
+                else:
+                    self.pre_dict[words[i]] = 1
+                    '''
+        if temp_sub and temp_pre:
+            print('---------------------------------------------')
+            print(des)
+            print('\t'.join(str(i + 1) for i in range(0, len(list(words)))))
+            print('\t'.join(word for word in list(words)))
+            print('\t'.join("%d:%s" % (arc.head, arc.relation) for arc in arcs))
+            print("find sub pre are: %s: %s" %(temp_sub, temp_pre))
+            self.identify_sub_pre(temp_sub, temp_pre, des, words, arcs)
+        if len(temp_pre) != 0:#add pre dict
+            for key,val in temp_pre.items():
+                if val in self.pre_dict.keys():
+                    self.pre_dict[val] += 1
+                else:
+                    self.pre_dict[val] = 1
+        if len(temp_sub) != 0:
+            for key,val in temp_sub.items():
+                if key in self.sub_dict.keys():
+                    self.sub_dict[key] += 1
+                else:
+                    self.sub_dict[key] = 1
+                    
 
     def main_function(self, des_dir):
-        file_num = len(os.listdir(des_dir)) 
+        file_num = len(os.listdir(des_dir))
         count = 0
-        #read all file
         for line in os.listdir(des_dir):
             print('start file %d  all file num:%d' %(count,file_num))
             des_path = os.path.join(des_dir,line)
             all_des = codecs.open(des_path, 'r' ,'utf-8')
             for des in all_des:
-                description = des.split('\t')[0]
-                words, arcs = ltp_parser.des_parse(description)
-                words1_dict, words2_dict = self.find_words_in_dicts(words)
-                if len(words1_dict) != 0 and len(words2_dict) != 0:
-                    print('---------------------------------------------')
-                    print(des)
-                    print('\t'.join(str(i + 1) for i in range(0, 
-                                                       len(list(words)))))
-                    print('\t'.join(word for word in list(words)))
-                    print('\t'.join("%d:%s" % (arc.head, arc.relation) 
-                                                         for arc in arcs))
-                    print("find words1 words2 are: %s: %s" 
-                                              %(words1_dict, words2_dict))
-                    res = self.identify_words_depend(words1_dict,words2_dict,
-                                                                         arcs)
-                    
-
-
-
-
-
-
+                des_list = des.split('\t')
+                self.find_sub_pre_in_dict(des_list[0])
         sub_pre_name = 'sub_pre'
         pre_sub_name = 'pre_sub'
         self.parse_dict(names['self.%s_dict'%sub_pre_name],'sub_pre')
