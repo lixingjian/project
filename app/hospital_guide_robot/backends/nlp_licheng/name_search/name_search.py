@@ -42,15 +42,60 @@ class NameSearch:
     #fun1 use the same number of word1/word2 to 
     #culculate the similarity of two words
     def fun1(self, word1, word2):
+        if len(word2) != len(word1):
+            return 0
         num = self.words_compare(word1, word2)
-        score = num / len( word1 ) * 100.0 - abs(len(word2) - len(word1)) * 0.0
+        score = num / len( word1 ) * 100.0
         return score
 
     def fun2(self,word1_yin, word2_yin):
-        score = 0
+        score = 100
         if word1_yin == word2_yin:
-            score = 100
+            return score
+        yin1_list = word1_yin.split(' ')
+        yin2_list = word2_yin.split(' ')
+        if len(yin1_list) == len(yin2_list):    
+            for i in range(len(yin1_list)):
+                diff_char = self.string_compare(yin1_list[i], yin2_list[i])
+                if len(diff_char) == 2:
+                    #if not distinguish 'l' 'n'
+                    #if not distinguish if there are 'g'
+                    if diff_char == 'ln' or diff_char == 'nl' or diff_char == ' g' or diff_char == 'g ':
+                        score -= 20 
+                    else:
+                        score = 0
+                if len(diff_char) == 4:
+                    if diff_char == 'ln g' or diff_char == 'nl g' or diff_char == 'lng ' or diff_char == 'nlg ':
+                        score -= 20
+                    else:
+                        score = 0
+                if len(diff_char) > 4:
+                        score = 0
+        else:
+            score = 0
         return score
+
+    def string_align(self,string1,string2):
+        l1 = len(string1)
+        l2 = len(string2)
+        if l1 > l2:
+            for i in range(l1 - l2):
+                string2 += ' '
+        else:
+            for i in range(l2 - l1):
+                string1 += ' '
+        return string1,string2
+
+    #compare string1 and string2,return 
+    def string_compare(self, string1, string2):
+        if len(string1) != len(string2):
+            string1, string2 = self.string_align(string1, string2)
+        diff_char = ''
+        for i in range(len(string1)):
+            if  string1[i] != string2[i]:
+                diff_char += string1[i] + string2[i]
+        return diff_char
+        
 
     #compare word1 and word2
     def words_compare(self, word1, word2):
