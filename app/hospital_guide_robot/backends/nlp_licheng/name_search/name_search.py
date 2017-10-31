@@ -7,7 +7,7 @@ from pinyin import PinYin
 class NameSearch:
     def __init__(self):
         self.name_yin_dict = self.get_name_yin_dict('name_pinyin_dict')
-        self.score_thre = 50
+        self.score_thre = 100
 
     def calculate_score(self,name, name_yin):
         name_dict = {}
@@ -37,13 +37,23 @@ class NameSearch:
     '''
         Define evaluation function
         function1:same form 0-100
-                2:same yin but different form
-                3:different yin
-                4:different tone
+                2:same yin 0-100
     '''
     #fun1 use the same number of word1/word2 to 
     #culculate the similarity of two words
     def fun1(self, word1, word2):
+        num = self.words_compare(word1, word2)
+        score = num / len( word1 ) * 100.0 - abs(len(word2) - len(word1)) * 0.0
+        return score
+
+    def fun2(self,word1_yin, word2_yin):
+        score = 0
+        if word1_yin == word2_yin:
+            score = 100
+        return score
+
+    #compare word1 and word2
+    def words_compare(self, word1, word2):
         char_num = {}
         for ele in word1:
             if ele in char_num.keys():
@@ -54,14 +64,7 @@ class NameSearch:
         for ele in word2:
             if ele in char_num.keys():
                 num += 1
-        score = num / len( word1 ) * 100.0
-        return score
-
-    def fun2(self,word1_yin, word2_yin):
-        score = 0
-        if word1_yin == word2_yin:
-            score = 100
-        return score
+        return num
 
     def hanzi2yin(self, hanzi):
         py = PinYin()
