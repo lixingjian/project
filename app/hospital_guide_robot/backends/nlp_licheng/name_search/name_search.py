@@ -24,6 +24,10 @@ class NameSearch:
         name_dict_sort = sorted(name_dict.items(), key = lambda
                                 item:item[1], reverse = True)
         print(name_dict_sort)
+        name_list = []
+        for ele in name_dict_sort:
+            name_list.append(ele[0])
+        return name_list
 
     def get_name_yin_dict(self,path):
         name_yin_dict = {}
@@ -34,6 +38,7 @@ class NameSearch:
             yin = name_yin_list[1].strip('\n')
             name_yin_dict[name] = yin
         return name_yin_dict
+
     '''
         Define evaluation function
         function1:same form 0-100
@@ -50,8 +55,6 @@ class NameSearch:
 
     def fun2(self,word1_yin, word2_yin):
         score = 100
-        if word1_yin == word2_yin:
-            return score
         yin1_list = word1_yin.split(' ')
         yin2_list = word2_yin.split(' ')
         if len(yin1_list) == len(yin2_list):    
@@ -70,10 +73,21 @@ class NameSearch:
                     else:
                         score = 0
                 if len(diff_char) > 4:
-                        score = 0
+                    score = 0
+                #initial_char_same
+                if self.same_initial_char( yin1_list[i], yin2_list[i]):
+                    score += 20
         else:
             score = 0
         return score
+
+    def same_initial_char(self,string1,string2):
+        #print('%s %s:' %(string1,string2))
+        if len(string1) == 0 or len(string2) == 0:
+            return False
+        if string1[0] == string2[0]:
+            return True
+        return False
 
     def string_align(self,string1,string2):
         l1 = len(string1)
@@ -95,7 +109,6 @@ class NameSearch:
             if  string1[i] != string2[i]:
                 diff_char += string1[i] + string2[i]
         return diff_char
-        
 
     #compare word1 and word2
     def words_compare(self, word1, word2):
@@ -119,6 +132,10 @@ class NameSearch:
 
 if __name__ == "__main__":
     ns = NameSearch()
-    name = input("please input:")
-    ns.run(name)    
-         
+    #name = input("please input:")
+    #ns.run(name)    
+    name_file = open('name_dict','r')
+    for name in name_file:
+        print('name:%s' %name)
+        ns.run(name.strip('\n'))
+        print('--------------')
