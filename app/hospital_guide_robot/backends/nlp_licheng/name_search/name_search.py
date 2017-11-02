@@ -7,7 +7,9 @@ from pinyin import PinYin
 class NameSearch:
     def __init__(self):
         self.name_yin_tone_dict = self.get_name_yin_tone_dict('name_yin_tone_dict')
-        self.score_thre = 0.67
+        self.TP = 200
+        self.score_thre = self.TP * 0.7
+        self.w = 1 / self.TP
     
     def calculate_score(self,name, yin, tone):
         name_dict = {}
@@ -15,11 +17,11 @@ class NameSearch:
             lib_name = key
             lib_yin = val.split(':')[0]
             lib_tone = val.split(':')[1].strip('\n')
-            w = 0.01 / 3
-            scores = w * self.fun1(name, lib_name) + w * self.fun2(yin, lib_yin) + w * self.fun3(tone, lib_tone)
+            
+            scores = self.fun1(name, lib_name) + self.fun2(yin, lib_yin) + self.fun3(tone, lib_tone)
             #add dict
             if scores >= self.score_thre:
-                name_dict[key] = scores
+                name_dict[key] = round(self.w * scores,2)
         return name_dict
 
     def run(self,name):
@@ -28,14 +30,11 @@ class NameSearch:
         name_dict_sort = sorted(name_dict.items(), key = lambda
                                 item:item[1], reverse = True)
         print(name_dict_sort)
-        name_list = []
-        for ele in name_dict_sort:
-            name_list.append(ele[0])
-        return name_list
+        return name_dict_sort
 
     def get_name_yin_tone_dict(self,path):
         name_yin_tone_dict = {}
-        name_yin_tone_file = open(path,'r')
+        name_yin_tone_file = codecs.open(path,'r','utf-8')
         for name_yin_tone in name_yin_tone_file:
             name_yin_tone_list = name_yin_tone.split('\t')
             name = name_yin_tone_list[0]
@@ -45,8 +44,9 @@ class NameSearch:
 
     '''
         Define evaluation function
-        function1:same form 0-100
-                2:same yin 0-100
+        function1:form 0-50
+                2:yin 0-100
+                3:tone 0-50
     '''
     #fun1 use the same number of word1/word2 to 
     #culculate the similarity of two words
@@ -54,7 +54,8 @@ class NameSearch:
         if len(word2) != len(word1):
             return 0
         num = self.words_compare(word1, word2)
-        score = num / len( word1 ) * 100.0
+        score_incre = 1 / len( word1 ) * 50.0
+        score = num * score_incre
         return score
 
     def fun2(self,word1_yin, word2_yin):
@@ -73,22 +74,28 @@ class NameSearch:
                 #if not distinguish 'l' 'n'
                 #if not distinguish if there are 'g'
                 if diff_char == 'ln' or diff_char == 'nl' or diff_char == ' g' or diff_char == 'g ':
-                    score += score_incre - 20
+                    score += score_incre - 10
             if len(diff_char) == 4:
                 if diff_char == 'ln g' or diff_char == 'nl g' or diff_char == 'lng ' or diff_char == 'nlg ':
-                    score -= score_incre - 25
+                    score += score_incre - 15
             #initial_char_same
             if self.same_initial_char( yin1_list[i], yin2_list[i]):
                 score += 5
         return score
 
     def fun3(self, word1_tone, word2_tone):
-        if word1_tone == word2_tone:
-            return 100
-        return 0
+        tone1_list = word1_tone.split()
+        tone2_list = word2_tone.split()
+        if len(tone1_list) != len(tone2_list):
+            return 0
+        score_incre = 1 / len( tone1_list ) * 50
+        score = 0
+        for i in range(len(tone1_list)):
+            if tone1_list[i] == tone2_list[i]:
+                score += score_incre
+        return score
 
     def same_initial_char(self,string1,string2):
-        #print('%s %s:' %(string1,string2))
         if len(string1) == 0 or len(string2) == 0:
             return False
         if string1[0] == string2[0]:
@@ -133,20 +140,21 @@ class NameSearch:
     def hanzi2yintone(self, hanzi):
         py = PinYin()
         py.load_word()
-        yin_list,tone_list = py.hanzi2yintone(string = hanzi)
+        yin_list,tone_list = py.hanzi2yintone(hanzi)
         yin = ' '.join(yin_list)
         tone = ' '.join(tone_list)
         return yin,tone
 
 if __name__ == "__main__":
     ns = NameSearch()
-    # name = input("please input:")
-    #ns.run(name)   
+    name = input("please input:")
+    ns.run(name)   
 
-   
-    name_file = open('name_dict','r')
+    '''
+    name_file = codecs.open('name_dict','r','utf-8')
     for name in name_file:
+
         print('name:%s' %name)
         ns.run(name.strip('\n'))
         print('--------------')
-   
+    '''

@@ -1,0 +1,6 @@
+先将姓名放入name_dict中，
+运行file_name2name_pinyin.py会产生一个中间文件name_yin_tone_dict
+
+姓名搜索的程序：name_search.py --> NameSearch对象的run函数
+
+                run函数输入为汉子名字，输出为对应匹配的名字集合

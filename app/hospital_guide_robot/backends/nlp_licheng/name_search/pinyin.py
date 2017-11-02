@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import os.path
-
+import codecs
 
 class PinYin(object):
     def __init__(self, dict_file='word.data'):
@@ -11,15 +11,14 @@ class PinYin(object):
     def load_word(self):
         if not os.path.exists(self.dict_file):
             raise IOError("NotFoundFile")
-
-        with open(self.dict_file) as f_obj:
-            for f_line in f_obj.readlines():
-                try:
-                    line = f_line.split('    ')
-                    self.word_dict[line[0]] = line[1]
-                except:
-                    line = f_line.split('   ')
-                    self.word_dict[line[0]] = line[1]
+        f = codecs.open(self.dict_file, 'r','utf-8')
+        for f_line in f:
+            try:
+                line = f_line.split('    ')
+                self.word_dict[line[0]] = line[1]
+            except:
+                line = f_line.split('   ')
+                self.word_dict[line[0]] = line[1]
 
     def hanzi2pinyin(self, string=""):
         result = []
@@ -29,9 +28,10 @@ class PinYin(object):
             result.append(self.word_dict.get(key, char).split()[0][:-1].lower())
         return result
     
-    def hanzi2yintone(self,string=''):
+    def hanzi2yintone(self,string):
         yin = []
         tone = []
+        string = string.encode('utf-8').decode('utf-8-sig')
         for char in string:
             key = '%X' % ord(char)
             temp = self.word_dict.get(key, char).split()
