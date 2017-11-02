@@ -72,8 +72,8 @@ def mailSendNew(mailAddress,filePath):
 
 if __name__ == '__main__':
 	#对应的相对地址，相对于当前目录
-	pathHealthDoc = "../../../../../../data/health_doc"
-	pathImage = "../../../../../../data/image"
+	pathHealthDoc = "/data/health_doc"
+	pathImage = "/data/image"
 	
 	#打开上一次的log日志，和本次做对比
 	logList = os.listdir("../log/")
