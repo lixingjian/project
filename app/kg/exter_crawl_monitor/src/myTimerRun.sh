@@ -15,11 +15,11 @@ while true ; do
     curTime=$(date "+%H%M%S")  
     echo $curTime  
     if [ "$curTime" -eq "$startTimeMorning" ];then
-        python externalCrawlerMonitor3_1.py
+        python externalCrawlerMonitor.py
 		#python test.py
     fi
 	if [ "$curTime" -eq "$startTimeEvening" ];then
-        python externalCrawlerMonitor3_1.py
+        python externalCrawlerMonitor.py
 		#python test.py
     fi
 	
